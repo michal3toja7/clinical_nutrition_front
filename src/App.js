@@ -11,9 +11,15 @@ class App extends Component {
     constructor(props) {
         super(props)
         this.state = {
-          header: '',
+          title: "",
         }
       }
+      
+     updateTitle(newTitle){
+       if(this.state.title!==newTitle)
+          this.setState({title: newTitle})
+      }
+
       
 
     render() {
@@ -21,9 +27,9 @@ class App extends Component {
         <div className="App">
           <header className="App-header">
             <div>
-              <NavBar/>
+              <NavBar title={this.state.title} />
                 <Container>
-                  <AppRouter/>
+                  <AppRouter title={(newTitle) => this.updateTitle(newTitle)}/>
                 </Container>
             </div>
           </header>

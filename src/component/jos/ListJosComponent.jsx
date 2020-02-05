@@ -21,10 +21,11 @@ class ListJosComponent extends Component {
         this.state = {
             initialjoss: [],
             joss: [],
-            header: 'Jednostki organizacyjne',
+            title: 'Jednostki organizacyjne',
             page: 0,
             rowsPerPage: 7,
         }
+        this.props.title(this.state.title);
         this.editJos = this.editJos.bind(this);
         this.addJos = this.addJos.bind(this);
         this.reloadjosList = this.reloadJosList.bind(this);
@@ -95,7 +96,7 @@ class ListJosComponent extends Component {
                                         <TableCell align="right"> {row.kod} </TableCell>
                                         <TableCell align="right">{row.nazwa}</TableCell>
                                         <TableCell align="right">{row.rodzaj}</TableCell>
-                                        <TableCell align="right">{row.czyAktywny}</TableCell>
+                                        <TableCell align="right">{row.czyAktywny ? 'Tak' : 'Nie'}</TableCell>
                                         <TableCell align="right" onClick={() => this.editJos(row.id)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}

@@ -1,40 +1,48 @@
 import axios from 'axios';
+import { BehaviorSubject } from 'rxjs';
 import API_URL from './Globals'
+import { findAllByDisplayValue } from '@testing-library/react';
 
 
 
 
-const currentUserSubject =JSON.parse(localStorage.getItem('currentUser'));
+const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')));
 
  const signInService = {
     login,
     logout,
-    currentUser: currentUserSubject,
-    isUserAuthenticated
+    currentUser: currentUserSubject.asObservable(),
+    isUserAuthenticated,
+    get currentUserValue () { return currentUserSubject.value }
 };
 
 
 
-async function login(user) {
-        let res;
-        await axios.post(API_URL+'/authenticate', user)
+   async function login(user) {
+    return await axios.post(API_URL+'/authenticate', user)
         .then(result => {localStorage.setItem('currentUser', JSON.stringify(result.data))
-                         res= true;})
-        .catch((error) =>{alert("Logowanie nie powiodło się")
-                         res= false});
-        return res;
+         currentUserSubject.next(result.data)}) 
     }
     
 function isUserAuthenticated(){
-    if (signInService.currentUser && signInService.currentUser.token) {
+    if (signInService.currentUserValue && signInService.currentUserValue.token) {
         return true;
     }else{
         return false;
     }
 
 }
+
+window.addEventListener('beforeunload', function (e) { 
+    e.preventDefault(); 
+    e.returnValue = ''; 
+    localStorage.removeItem('currentUser');
+    currentUserSubject.next(null);
+}); 
+
 function logout() {
         localStorage.removeItem('currentUser');
+        currentUserSubject.next(null);
         window.location.reload();
 }
 

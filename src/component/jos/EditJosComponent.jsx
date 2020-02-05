@@ -13,6 +13,7 @@ class EditJosComponent extends Component {
     constructor(props){
         super(props);
         this.state ={
+            title: 'Edytuj Jednostkę',
             id:'',
             kod: '',
             nazwa: '',
@@ -28,6 +29,7 @@ class EditJosComponent extends Component {
             message: null,
             fieldWidth :'48%'
         }
+        this.props.title(this.state.title);
         this.saveJos = this.saveJos.bind(this);
         this.loadJos = this.loadJos.bind(this);
     }
@@ -128,7 +130,7 @@ class EditJosComponent extends Component {
                         name="nazwa" value={this.state.nazwa} onChange={this.onChange} style={fieldStyle.right}/>
 
                         <TextField variant="outlined" autoFocus required select label="Rodzaj Jednostki" margin="normal"
-                        name="rodzaj" value={this.state.rodzaj} onChange={this.onChange} style={fieldStyle.left}>
+                        name="rodzaj" value={this.state.rodzaj} onChange={this.onChange} style={fieldStyle.leftAlone}>
                             <MenuItem value={"Apteka"}>Apteka</MenuItem>
                             <MenuItem value={"Oddział"}>Oddział</MenuItem>
                             <MenuItem value={"Poradnia"}>Poradnia</MenuItem>
@@ -137,7 +139,7 @@ class EditJosComponent extends Component {
                             <MenuItem value={"Inny"}>Inny</MenuItem>
                         </TextField>
 
-                    <Typography variant="h6" fullwidth align="left">Dane adresowe:</Typography>                    
+                    <Typography variant="h6" fullwidth="true" align="left">Dane adresowe:</Typography>                    
                         <TextField variant="outlined" autoFocus type="text"   margin="normal" 
                         label="Nazwa na pieczątce" name="nazwaPieczatka" value={this.state.nazwaPieczatka} onChange={this.onChange} fullWidth/>
 

@@ -8,24 +8,35 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import signInService from "../_services/SignInService";
-
+import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
+import { Button } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
 
  class Navbar extends Component{
   constructor(props){
     super(props);
     this.state ={
       title: '',
-      auth: signInService.isUserAuthenticated(),
-      anchorEl: '',
+      auth: signInService.currentUserValue,
+      anchorEl: false,
     }
   //  this.headerUpdate=this.headerUpdate.bind(this);
 
 }
 
-componentDidMount() {
-  this.interval = setInterval(() => this.setState({ time: Date.now() }), 500);
-//this.setState({title: this.changeTitle()})
+  componentDidUpdate(){
+    if(this.state.title!== this.props.title){
+      this.setState({title: this.props.title,
+                    auth: signInService.currentUserValue})
+      }
+  }
+component(){
+  if(!this.state.title === this.props.title){
+  this.setState({title: this.props.title})
+  }
 }
+
+
 componentWillUnmount() {
   clearInterval(this.interval);
 }
@@ -74,60 +85,77 @@ changeTitle = () => {
       signInService.logout();
     };
 
-    let title = this.changeTitle();
+   // let title = this.changeTitle();
 
     return (
       <div className={useStyles.root}>
         <AppBar position="fixed">
           <Toolbar style={toolbar}>
-
-            <div style={navLeft}>
-            </div>
-
-            <div style={navCenter}>
-              <Typography variant="h4" className={useStyles.title}>
-                {title}
-              </Typography>
-            </div>
-
-            {this.state.auth && (
-              <div style={navRight}>
-              <Typography style={{display:'inline-block'}} variant="h6">
-                Zalogowany: {signInService.currentUser.imiona} {signInService.currentUser.nazwisko}
-              </Typography>
-
-              <IconButton
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-                style={{display:'inline-block', float: 'right'}}
-              >
-       
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={this.state.anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Moje konto</MenuItem>
-                <MenuItem onClick={handleCloseLogout}>Wyloguj</MenuItem>
-              </Menu>
+            <div style={flexStyle}>
+              {this.state.auth && (
+                  <div style={{width: "33%"}}>
+                    <div style={{width: "25%"}}>
+                    <Button>
+                      <ReplyRoundedIcon
+                      style={iconStyle}>
+                      </ReplyRoundedIcon></Button>
+                      </div>
+                      <div style={{width: "75%"}}></div>
+                  </div>
+              )}
+              {this.state.auth && (
+                  <div style={{width: "33%"}}>
+                    <Typography variant="h4" className={useStyles.title}>
+                      {this.state.title}
+                    </Typography>
+                  </div>
+              )}
+              {!this.state.auth && (
+                  <div style={{width: "100%"}}>
+                    <Typography variant="h4" className={useStyles.title}>
+                      {this.state.title}
+                    </Typography>
+                  </div>
+              )}
+              {this.state.auth && (
+                  <div style={{width: "25%"}}>
+                  <Typography variant="h6">
+                    Zalogowany: {this.state.auth.imiona} {this.state.auth.nazwisko}
+                  </Typography>
+                  </div>
+              )}
+              {this.state.auth && (
+                  <div style={{width: "8%"}}>
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    style={iconStyle}
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={open}
+                    onClose={handleClose}
+                  >
+                    <MenuItem onClick={handleClose}>Moje konto</MenuItem>
+                    <MenuItem onClick={handleCloseLogout}>Wyloguj</MenuItem>
+                  </Menu>
+                  </div>
+              )}
               </div>
-            )}
-
           </Toolbar>
         </AppBar>
       </div>
@@ -142,41 +170,23 @@ const toolbar = {
 //marginRight : 'auto',
     font: 'bold'
 }
-const navLeft = {
-  float: 'left',
-  width: '33%'
+const flexStyle={
+  width: "100%",
+  display: "flex",
+  flexDirection: "row", 
+  alignItems: "center", 
+  flexWrap: "wrap"
 }
-const navCenter = {
-  float: 'center',
-  width: '33%'
+const iconStyle={
+  color: "white",
+  clear: "both",
+  transform: "scale(2)", 
+  margin: "10px"
 }
-const navRight = {
-  display:'inline-block',
-  float: 'right',
-  width: '33%', 
-  alignItems: 'right', 
-  justifyContent: 'right'
-}
+
 const useStyles = makeStyles(theme => ({
-  left:{
-    float: 'left',
-    width: '33%'
-  },
-    center:{
-    float: 'center',
-    width: '33%'
-  },
-  right:{
-    display:'inline-block',
-    float: 'right',
-    width: '33%', 
-    alignItems: 'right', 
-    justifyContent: 'right'
-  },
   root: {
     flexGrow: 1,
-
-
   },
   menuButton: {
     marginRight: theme.spacing(2),

@@ -18,10 +18,20 @@ class RouterComponent extends Component {
         constructor(props){
             super(props);
             this.state ={
+              time: '',
             }
+            
         }
 
-        
+        componentWillMount(){
+          this.props.title(this.state.title)
+          
+        }
+
+        updateTitle(newTitle){
+          this.props.title(newTitle)
+        }
+  
         
     render(){
         return(
@@ -29,14 +39,30 @@ class RouterComponent extends Component {
                 <Router>
                         <Switch>
                             <Redirect from="/" exact to="/home"/>
-                            <Route path="/login" exact component={SignIn}/>
-                            <SecretRoute path="/home" component={UserMenu}/>
-                            <SecretRoute path="/admin/users" component={ListUserComponent}/>
-                            <SecretRoute path="/admin/add-user" component={AddUserComponent}/>
-                            <SecretRoute path="/admin/edit-user" component={EditUserComponent}/>
-                            <SecretRoute path="/admin/jos" component={ListJosComponent}/>
-                            <SecretRoute path="/admin/add-jos" component={AddJosComponent}/>
-                            <SecretRoute path="/admin/edit-jos" component={EditJosComponent}/>
+                            <Route title={'testowanko'} path="/login" exact 
+                            component={(props) => <SignIn {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/home" 
+                            component={(props) => <UserMenu {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/users" 
+                            component={(props) => <ListUserComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/add-user" 
+                            component={(props) => <AddUserComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/edit-user" 
+                            component={(props) => <EditUserComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/jos" 
+                            component={(props) => <ListJosComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/add-jos" 
+                            component={(props) => <AddJosComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/edit-jos" 
+                            component={(props) => <EditJosComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
                         </Switch>
                 </Router>
             </div>
@@ -60,7 +86,7 @@ function SecretRoute({ component: Component, ...rest }) {
       <Route
         {...rest}
         render={props =>
-            signInService.isUserAuthenticated() ? (
+          signInService.currentUserValue ? (
             <Component {...props} />
           ) : (
             <Redirect
@@ -74,6 +100,7 @@ function SecretRoute({ component: Component, ...rest }) {
       />
     );
   }
+  
 
 
 export default RouterComponent;

@@ -21,10 +21,11 @@ class ListUserComponent extends Component {
         this.state = {
             initialUsers: [],
             users: [],
-            header: 'Użytkownicy',
+            title: 'Użytkownicy',
             page: 0,
             rowsPerPage: 7,
         }
+        this.props.title(this.state.title);
         this.editUser = this.editUser.bind(this);
         this.addUser = this.addUser.bind(this);
         this.reloadUserList = this.reloadUserList.bind(this);
@@ -97,7 +98,7 @@ class ListUserComponent extends Component {
                                         <TableCell align="right">{row.imiona}</TableCell>
                                         <TableCell align="right">{row.nazwisko}</TableCell>
                                         <TableCell align="right">{row.rodzaj_personelu}</TableCell>
-                                        <TableCell align="right">{row.zablokowany}</TableCell>
+                                        <TableCell align="right">{row.zablokowany  ? 'Tak' : 'Nie'}</TableCell>
                                         <TableCell align="right" onClick={() => this.editUser(row.id)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}

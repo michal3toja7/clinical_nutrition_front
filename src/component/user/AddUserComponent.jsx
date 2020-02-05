@@ -13,6 +13,7 @@ class AddUserComponent extends Component{
     constructor(props){
         super(props);
         this.state ={
+            title: 'Dodawanie Użytkownika',
             username: '',
             password: '',
             imiona: '',
@@ -25,6 +26,7 @@ class AddUserComponent extends Component{
             message: null,
             fieldWidth :'48%'
         }
+        this.props.title(this.state.title);
         this.saveUser = this.saveUser.bind(this);
     }
     componentWillMount(){
@@ -49,11 +51,11 @@ class AddUserComponent extends Component{
                     administrator: "true",//this.state.administrator, 
                     zablokowany: "false"//this.state.zablokowany, 
                     };
-        console.log(UserService.addUser(user)
+        UserService.addUser(user)
             .then(res => {
                 this.setState({message : 'Użytkownik dodany prawidłowo.'});
                 this.props.history.push('/admin/users');
-            }));
+            });
     }
 
     onChange = (e) =>

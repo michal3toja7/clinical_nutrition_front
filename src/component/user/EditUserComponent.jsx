@@ -13,6 +13,7 @@ class EditUserComponent extends Component {
     constructor(props){
         super(props);
         this.state ={
+            title: 'Edycja Użytkownika',
             id:'',
             username: '',
             password: '',
@@ -26,11 +27,13 @@ class EditUserComponent extends Component {
             message: null,
             fieldWidth :'48%'
         }
+        this.props.title(this.state.title);
         this.saveUser = this.saveUser.bind(this);
         this.loadUser = this.loadUser.bind(this);
     }
     
     componentWillMount(){
+        this.loadUser();
         var screenWidth= window.innerWidth;
         if(screenWidth<600){
             this.setState({fieldWidth: '100%' }) 
@@ -38,7 +41,7 @@ class EditUserComponent extends Component {
         else{
             this.setState({fieldWidth: '48%' }) 
         }
-        this.loadUser();
+
     }
 
     loadUser() {
