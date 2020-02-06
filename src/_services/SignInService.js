@@ -36,8 +36,8 @@ function isUserAuthenticated(){
 window.addEventListener('beforeunload', function (e) { 
     e.preventDefault(); 
     e.returnValue = ''; 
-    localStorage.removeItem('currentUser');
-    currentUserSubject.next(null);
+ //   localStorage.removeItem('currentUser');
+ //   currentUserSubject.next(null);
 }); 
 
 function logout() {

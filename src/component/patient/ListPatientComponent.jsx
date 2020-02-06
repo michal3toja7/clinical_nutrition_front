@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import UserService from "../../_services/UserService";
+import PatientService from "../../_services/PatientService";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,25 +12,23 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 
-class ListUserComponent extends Component {
+class ListPatientComponent extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            initialUsers: [],
-            users: [],
-            title: 'Użytkownicy',
+            initialPatients: [],
+            patients: [],
+            title: 'Pacjenci',
             page: 0,
             rowsPerPage: 7,
         }
         this.props.title(this.state.title);
-        this.editUser = this.editUser.bind(this);
-        this.addUser = this.addUser.bind(this);
-        this.reloadUserList = this.reloadUserList.bind(this);
-        this.editPremissions = this.editPremissions.bind(this);
+        this.editPatient = this.editPatient.bind(this);
+        this.addPatient = this.addPatient.bind(this);
+        this.reloadPatientList = this.reloadPatientList.bind(this);
     }
     
     handleChangePage = (event, newPage) => {
@@ -45,33 +43,29 @@ class ListUserComponent extends Component {
 
 
     componentDidMount() {
-        this.reloadUserList();
+        this.reloadPatientList();
     }
 
-    reloadUserList() {
-        UserService.fetchUsers()
-            .then(result => this.setState({initialUsers: result.data,
-                                           users: result.data}));
+    reloadPatientList() {
+        PatientService.fetchPatients()
+            .then(result => this.setState({initialPatients: result.data,
+                                           patients: result.data}));
     }
 
-    editUser(id) {
-        window.localStorage.setItem("userId", id);
-        this.props.history.push('/admin/edit-user');
-    }
-    editPremissions(id) {
-        window.localStorage.setItem("userId", id);
-        this.props.history.push('/admin/premissions');
+    editPatient(id) {
+        window.localStorage.setItem("patientId", id);
+        this.props.history.push('/edit-patient');
     }
 
-    addUser() {
-        window.localStorage.removeItem("userId");
-        this.props.history.push('/admin/add-user');
+    addPatient() {
+        window.localStorage.removeItem("patientId");
+        this.props.history.push('/add-patient');
     }
 
     search= (searchString) => {
         const search = searchString.target.value;
-        this.setState({users: this.state.initialUsers
-        .filter((data) => data.username.toLowerCase().includes(search.toLowerCase()) 
+        this.setState({patients: this.state.initialPatients
+        .filter((data) => data.patientname.toLowerCase().includes(search.toLowerCase()) 
         || data.imiona.toLowerCase().includes(search.toLowerCase())
         || data.nazwisko.replace(null,' ').toLowerCase().includes(search.toLowerCase())  )})
     }
@@ -85,29 +79,31 @@ class ListUserComponent extends Component {
                         <Table aria-label="custom pagination table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell >ID</TableCell>
-                                    <TableCell align="right">Login</TableCell>
+                                    <TableCell style={{display: "none"}} >ID</TableCell>
                                     <TableCell align="right">Imiona</TableCell>
                                     <TableCell align="right">Nazwisko</TableCell>
-                                    <TableCell align="right">Rodzaj</TableCell>
-                                    <TableCell align="right">Czy Aktywny</TableCell>
+                                    <TableCell align="right">Pesel</TableCell>
+                                    <TableCell align="right">Płeć</TableCell>
+                                    <TableCell align="right">Data Urodzenia</TableCell>
+                                    <TableCell align="right">Miasto</TableCell>
+                                    <TableCell align="right">Czy Żyje</TableCell>
                                     <TableCell align="right">Edytuj</TableCell>
-                                    <TableCell align="right">Uprawnienia</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {(this.state.rowsPerPage > 0
-                                ? this.state.users.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
-                                : this.state.users).map(row => (
+                                ? this.state.patients.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
+                                : this.state.patients).map(row => (
                                     <TableRow hover key={row.id}>
-                                        <TableCell component="th" scope="row"> {row.id} </TableCell>
-                                        <TableCell align="right"> {row.username} </TableCell>
-                                        <TableCell align="right">{row.imiona}</TableCell>
+                                        <TableCell style={{display: "none"}} component="th" scope="row"> {row.id} </TableCell>
+                                        <TableCell align="right"> {row.imiona} </TableCell>
                                         <TableCell align="right">{row.nazwisko}</TableCell>
-                                        <TableCell align="right">{row.rodzaj_personelu}</TableCell>
-                                        <TableCell align="right">{row.zablokowany  ? 'Tak' : 'Nie'}</TableCell>
-                                        <TableCell align="right" onClick={() => this.editUser(row.id)}><CreateIcon /></TableCell>
-                                        <TableCell align="right" onClick={() => this.editPremissions(row.id)}><LockOpenIcon /></TableCell>
+                                        <TableCell align="right">{row.pesel}</TableCell>
+                                        <TableCell align="right">{row.plec ==='M' ? 'Mężczyzna' :'Kobieta'}</TableCell>
+                                        <TableCell align="right">{new Date(row.dataUrodzenia).toLocaleDateString('pl-PL')}</TableCell>
+                                        <TableCell align="right">{row.adresZamieszkania.miasto}</TableCell>
+                                        <TableCell align="right">{row.czyZyje  ? 'Tak' : 'Nie'}</TableCell>
+                                        <TableCell align="right" onClick={() => this.editPatient(row.id)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}
 
@@ -118,7 +114,7 @@ class ListUserComponent extends Component {
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                         colSpan={8}
-                                        count={this.state.users.length}
+                                        count={this.state.patients.length}
                                         rowsPerPage={this.state.rowsPerPage}
                                         page={this.state.page}
                                         labelRowsPerPage="Wierszy na stronę:"
@@ -133,10 +129,10 @@ class ListUserComponent extends Component {
                             </TableFooter>             
                         </Table>
                     </TableContainer>
-                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addUser()}> Dodaj Użytkownika</Button>
+                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addPatient()}> Dodaj Pacjenta</Button>
                 </div>
             );
         }
 }
 
-export default ListUserComponent;
+export default ListPatientComponent;

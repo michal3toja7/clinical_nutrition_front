@@ -6,9 +6,14 @@ import EditUserComponent from "./user/EditUserComponent";
 import ListJosComponent from "./jos/ListJosComponent";
 import AddJosComponent from "./jos/AddJosComponent";
 import EditJosComponent from "./jos/EditJosComponent";
+import ListPatientComponent from "./patient/ListPatientComponent";
+import EditPatientComponent from "./patient/EditPatientComponent";
+import AddPatientComponent from "./patient/AddPatientComponent";
 import SignIn from "./SignIn";
 import signInService from "../_services/SignInService";
 import UserMenu from "./UserMenu";
+import PremissionsPanel from "./user/PremissionsPanel";
+
 
 
 
@@ -62,6 +67,18 @@ class RouterComponent extends Component {
                             />
                             <SecretRoute path="/admin/edit-jos" 
                             component={(props) => <EditJosComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/patients" 
+                            component={(props) => <ListPatientComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/edit-patient" 
+                            component={(props) => <EditPatientComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/add-patient" 
+                            component={(props) => <AddPatientComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/admin/premissions" 
+                            component={(props) => <PremissionsPanel {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
                         </Switch>
                 </Router>

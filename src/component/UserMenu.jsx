@@ -80,7 +80,9 @@ return(
                 <div style={{width: "33%"}}>   
                     <ul style={{listStyle: "none"}}>
                         <li><Button><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
-                        <li><Button>Rejestr pacjentów</Button></li>     
+                        <li><Button onClick={() => props.history.push("/patients")}>
+                            Rejestr pacjentów
+                            </Button></li>     
                         <li><Button>Dodaj pacjenta</Button></li>
                         <li><Button>Edytuj Pacjenta</Button></li>
 

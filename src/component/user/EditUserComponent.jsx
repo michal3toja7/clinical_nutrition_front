@@ -48,7 +48,6 @@ class EditUserComponent extends Component {
         UserService.fetchUserById(window.localStorage.getItem("userId"))
             .then((result) => {
                 let user = result.data;
-                console.log(user)
                 this.setState({
                 id: user.id,
                 username: user.username,
