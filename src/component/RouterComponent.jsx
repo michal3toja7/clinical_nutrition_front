@@ -19,7 +19,7 @@ import SignIn from "./SignIn";
 import signInService from "../_services/SignInService";
 import UserMenu from "./UserMenu";
 import PremissionsPanel from "./user/PremissionsPanel";
-
+import ListStudyComponent from "./patient/ListStudyComponent";
 
 
 
@@ -103,6 +103,9 @@ class RouterComponent extends Component {
                             />
                             <SecretRoute path="/add-preparationBag" 
                             component={(props) => <AddPreparationBagComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/patient/study" 
+                            component={(props) => <ListStudyComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
 
                         </Switch>

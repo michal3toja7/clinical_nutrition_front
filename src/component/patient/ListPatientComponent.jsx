@@ -12,6 +12,7 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 
 
 class ListPatientComponent extends Component {
@@ -29,6 +30,8 @@ class ListPatientComponent extends Component {
         this.editPatient = this.editPatient.bind(this);
         this.addPatient = this.addPatient.bind(this);
         this.reloadPatientList = this.reloadPatientList.bind(this);
+        this.studyPatient = this.studyPatient.bind(this);
+        
     }
     
     handleChangePage = (event, newPage) => {
@@ -55,6 +58,10 @@ class ListPatientComponent extends Component {
     editPatient(id) {
         window.localStorage.setItem("patientId", id);
         this.props.history.push('/edit-patient');
+    }
+    studyPatient(id) {
+        window.localStorage.setItem("patientId", id);
+        this.props.history.push('/list-studies');
     }
 
     addPatient() {
@@ -88,6 +95,7 @@ class ListPatientComponent extends Component {
                                     <TableCell align="right">Miasto</TableCell>
                                     <TableCell align="right">Czy Żyje</TableCell>
                                     <TableCell align="right">Edytuj</TableCell>
+                                    <TableCell align="right">Badanie</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -104,6 +112,7 @@ class ListPatientComponent extends Component {
                                         <TableCell align="right">{row.adresZamieszkania.miasto}</TableCell>
                                         <TableCell align="right">{row.czyZyje  ? 'Tak' : 'Nie'}</TableCell>
                                         <TableCell align="right" onClick={() => this.editPatient(row.id)}><CreateIcon /></TableCell>
+                                        <TableCell align="right" onClick={() => this.studyPatient(row.id)}><LocalHospitalIcon /></TableCell>
                                     </TableRow>
                                 ))}
 
