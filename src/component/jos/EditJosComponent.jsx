@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import JosService from "../../_services/JosService";
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -131,12 +131,12 @@ class EditJosComponent extends Component {
 
                         <TextField variant="outlined" autoFocus required select label="Rodzaj Jednostki" margin="normal"
                         name="rodzaj" value={this.state.rodzaj} onChange={this.onChange} style={fieldStyle.leftAlone}>
-                            <MenuItem value={"Apteka"}>Apteka</MenuItem>
-                            <MenuItem value={"Oddział"}>Oddział</MenuItem>
-                            <MenuItem value={"Poradnia"}>Poradnia</MenuItem>
-                            <MenuItem value={"Pracownia"}>Pracownia</MenuItem>
-                            <MenuItem value={"Izba"}>Izba Przyjęć</MenuItem>
-                            <MenuItem value={"Inny"}>Inny</MenuItem>
+                            <MenuItem value={"APT"}>Apteka</MenuItem>
+                            <MenuItem value={"ODD"}>Oddział</MenuItem>
+                            <MenuItem value={"POR"}>Poradnia</MenuItem>
+                            <MenuItem value={"PRA"}>Pracownia</MenuItem>
+                            <MenuItem value={"IZB"}>Izba Przyjęć</MenuItem>
+                            <MenuItem value={"INN"}>Inny</MenuItem>
                         </TextField>
 
                     <Typography variant="h6" fullwidth="true" align="left">Dane adresowe:</Typography>                    

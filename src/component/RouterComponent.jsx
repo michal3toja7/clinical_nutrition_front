@@ -6,6 +6,12 @@ import EditUserComponent from "./user/EditUserComponent";
 import ListJosComponent from "./jos/ListJosComponent";
 import AddJosComponent from "./jos/AddJosComponent";
 import EditJosComponent from "./jos/EditJosComponent";
+import ListPreparationComponent from "./preparation/ListPreparationComponent";
+import EditPreparationComponent from "./preparation/EditPreparationComponent";
+import AddPreparationComponent from "./preparation/AddPreparationComponent";
+import ListPreparationBagComponent from "./preparation/ListPreparationBagComponent";
+import EditPreparationBagComponent from "./preparation/EditPreparationBagComponent";
+import AddPreparationBagComponent from "./preparation/AddPreparationBagComponent";
 import ListPatientComponent from "./patient/ListPatientComponent";
 import EditPatientComponent from "./patient/EditPatientComponent";
 import AddPatientComponent from "./patient/AddPatientComponent";
@@ -80,6 +86,25 @@ class RouterComponent extends Component {
                             <SecretRoute path="/admin/premissions" 
                             component={(props) => <PremissionsPanel {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
+                            <SecretRoute path="/preparations" 
+                            component={(props) => <ListPreparationComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/edit-preparation" 
+                            component={(props) => <EditPreparationComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/add-preparation" 
+                            component={(props) => <AddPreparationComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/preparationBags" 
+                            component={(props) => <ListPreparationBagComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/edit-preparationBag" 
+                            component={(props) => <EditPreparationBagComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/add-preparationBag" 
+                            component={(props) => <AddPreparationBagComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+
                         </Switch>
                 </Router>
             </div>

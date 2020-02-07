@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { Component } from 'react'
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Tabs from '@material-ui/core/Tabs';
@@ -10,6 +10,10 @@ import BusinessRoundedIcon from '@material-ui/icons/BusinessRounded';
 import ShoppingBasketRoundedIcon from '@material-ui/icons/ShoppingBasketRounded';
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded';
 import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
+import LocalDiningIcon from '@material-ui/icons/LocalDining';
+import josService from "../_services/JosService";
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -40,105 +44,151 @@ function a11yProps(index) {
       'aria-controls': `full-width-tabpanel-${index}`,
     };
   }
+ 
 
 
 
-export default function UserMenu(props) {
-    props.title('Menu');
-    const [value, setValue] = React.useState(0);
 
 
-    const handleChange = (event, newValue) => {
-      setValue(newValue);
+class UserMenu extends Component{
+
+        constructor(props){
+            super(props);
+            this.state ={
+                title: 'Menu',
+                isAdmin: true,
+                message: null,
+                joss: [],
+                currentJos: '',
+                value: 0,
+                fieldWidth :'48%',
+                test: {}
+            }
+            this.props.title(this.state.title);
+        }
+
+    componentDidMount(){
+        josService.fetchJoss()
+              .then(result => {this.setState({joss: result.data})})
+    }
+
+
+     handleChange = (event, newValue) => {
+        this.setState({value:newValue});
     };
-    const handleChangeIndex = index => {
-        setValue(index);
+     handleChangeIndex = index => {
+        this.setState({value: index});
       };
-      const isAdmin = true;
+    
+      onSetJos = (e) =>{
+      this.setState({ [e.target.name]: e.target.value } )
+      josService.fetchJosById(e.target.value)
+      .then((result) =>{ window.localStorage.setItem("currentJos", JSON.stringify(result.data))})
+    };
 
-return(
-    <div>
-      <Tabs value={value} onChange={handleChange} variant="fullWidth"  indicatorColor="primary" textColor="primary" centered>
-        <Tab label="Menu Użytkownika" {...a11yProps(0)} style={{fontWeight: "bold"}}/>
-        {isAdmin &&(
-        <Tab label="Menu Administratora" {...a11yProps(1)} style={{fontWeight: "bold"}}/>
-        )}
-      </Tabs>
+render(){
+    return(
+        <div>
+        <Tabs value={this.state.value} onChange={this.handleChange} variant="fullWidth"  indicatorColor="primary" textColor="primary" centered>
+            <Tab label="Menu Użytkownika" {...a11yProps(0)} style={{fontWeight: "bold"}}/>
+            {this.state.isAdmin &&(
+            <Tab label="Menu Administratora" {...a11yProps(1)} style={{fontWeight: "bold"}}/>
+            )}
+        </Tabs>
+            <TabPanel value={this.state.value} index={0} >
+                <TextField variant="outlined" autoFocus style={{width:'100%'}} select label="Jednostka Organizacyjna:" margin="normal"
+                    name="currentJos" onChange={this.onSetJos}  value={this.state.currentJos} >
+                        {this.state.joss.map(row => {
+                            return <MenuItem key={row.id} value={row.id}>{row.kod} {row.nazwa}</MenuItem>
+                        })}
+                            
+                </TextField>
 
-        <TabPanel value={value} index={0} >
-            <div style= {flexStyle}>
-                <div style={{width: "33%"}}>   
-                    <ul style={{listStyle: "none", fontWeight: "bold"}}>
-                        <li><Button><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
-                        <li><Button>Zamówienia</Button></li>     
-                        <li><Button>Zamówienia do realizacji</Button></li>
-                        <li><Button>Zamówienia zrealizowane</Button></li>
-                        <li><Button>Zamówienia zapisane</Button></li>
-                    </ul>
+                <div style= {flexStyle}>
+
+                    <div style={{width: "25%"}}>   
+                        <ul style={{listStyle: "none", fontWeight: "bold"}}>
+                            <li><Button><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
+                            <li><Button>Zamówienia</Button></li>     
+                            <li><Button>Zamówienia do realizacji</Button></li>
+                            <li><Button>Zamówienia zrealizowane</Button></li>
+                            <li><Button>Zamówienia zapisane</Button></li>
+                        </ul>
+                    </div>
+
+                    <div style={{width: "25%"}}>   
+                        <ul style={{listStyle: "none"}}>
+                            <li><Button><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
+                            <li><Button onClick={() => this.props.history.push("/patients")}>
+                                Rejestr pacjentów
+                                </Button></li>     
+                            <li><Button onClick={() => this.props.history.push("/add-patient")}>Dodaj pacjenta</Button></li>
+                            <li><Button onClick={() => this.props.history.push("/patients")}>Edytuj Pacjenta</Button></li>
+
+                        </ul>
+                    </div>
+
+                    <div style={{width: "25%"}}>   
+                        <ul style={{listStyle: "none"}}>
+                            <li><Button><DescriptionRoundedIcon style={iconStyle}></DescriptionRoundedIcon></Button></li>
+                            <li><Button>Raporty</Button></li>     
+                        </ul>
+                    </div>
+                    <div style={{width: "25%"}}>   
+                        <ul style={{listStyle: "none"}}>
+                            <li><Button><LocalDiningIcon style={iconStyle}></LocalDiningIcon></Button></li>
+                            <li><Button  onClick={() => this.props.history.push("/preparations")}>Preparaty</Button></li>
+                            <li><Button  onClick={() => this.props.history.push("/add-preparation")}>Dodaj Preparat</Button></li>        
+                            <li><Button  onClick={() => this.props.history.push("/preparationBags")}>Worki Żywieniowe</Button></li>
+                            <li><Button  onClick={() => this.props.history.push("/add-preparationBag")}>Dodaj Worek</Button></li>      
+                        </ul>
+                    </div>
                 </div>
+            </TabPanel>
 
-                <div style={{width: "33%"}}>   
-                    <ul style={{listStyle: "none"}}>
-                        <li><Button><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
-                        <li><Button onClick={() => props.history.push("/patients")}>
-                            Rejestr pacjentów
-                            </Button></li>     
-                        <li><Button>Dodaj pacjenta</Button></li>
-                        <li><Button>Edytuj Pacjenta</Button></li>
+            <TabPanel value={this.state.value} index={1} >
+                <div style={flexStyle}>
+                    <div style={{width:"50%"}}>
+                        <ul style={{listStyle: "none"}}>
+                            <li><Button onClick={() => this.props.history.push("/admin/users")}>
+                                <AssignmentIndRoundedIcon style={iconStyle}></AssignmentIndRoundedIcon>
+                            </Button></li>
+                            <li><Button onClick={() => this.props.history.push("/admin/users")}>
+                                Lista użytkowników
+                            </Button></li>
+                            <li><Button onClick={() => this.props.history.push("/admin/add-user")}>
+                                Dodaj użytkownika
+                            </Button></li>
+                            <li><Button onClick={() => this.props.history.push("/admin/users")}>
+                                Edytuj użytkownika
+                            </Button></li>
+                        </ul>
+                    </div>
 
-                    </ul>
-                </div>
-
-                <div style={{width: "33%"}}>   
-                    <ul style={{listStyle: "none"}}>
-                        <li><Button><DescriptionRoundedIcon style={iconStyle}></DescriptionRoundedIcon></Button></li>
-                        <li><Button>Raporty</Button></li>     
-                    </ul>
-                </div>
-
+                    <div style={{width:"50%"}}>
+                        <ul style={{listStyle: "none"}}>
+                                <li><Button onClick={() => this.props.history.push("/admin/jos")}>
+                                    <BusinessRoundedIcon style={iconStyle}></BusinessRoundedIcon>
+                                </Button></li>
+                                <li><Button onClick={() => this.props.history.push("/admin/jos")}>
+                                    Lista Jednostek Organizacyjnych
+                                </Button></li>
+                                <li><Button onClick={() => this.props.history.push("/admin/add-jos")}>
+                                    Dodaj Jednostkę Organizacyjną
+                                </Button></li>
+                                <li><Button onClick={() => this.props.history.push("/admin/jos")}>
+                                    Edytuj Jednostkę Organizacyjną
+                                </Button></li>
+                        </ul>
+                    </div>  
+                </div>    
+            </TabPanel>
             </div>
-        </TabPanel>
-
-        <TabPanel value={value} index={1} >
-            <div style={flexStyle}>
-                <div style={{width:"50%"}}>
-                    <ul style={{listStyle: "none"}}>
-                        <li><Button onClick={() => props.history.push("/admin/users")}>
-                            <AssignmentIndRoundedIcon style={iconStyle}></AssignmentIndRoundedIcon>
-                        </Button></li>
-                        <li><Button onClick={() => props.history.push("/admin/users")}>
-                            Lista użytkowników
-                        </Button></li>
-                        <li><Button onClick={() => props.history.push("/admin/add-user")}>
-                            Dodaj użytkownika
-                        </Button></li>
-                        <li><Button onClick={() => props.history.push("/admin/users")}>
-                            Edytuj użytkownika
-                        </Button></li>
-                    </ul>
-                </div>
-
-                <div style={{width:"50%"}}>
-                    <ul style={{listStyle: "none"}}>
-                            <li><Button onClick={() => props.history.push("/admin/jos")}>
-                                <BusinessRoundedIcon style={iconStyle}></BusinessRoundedIcon>
-                            </Button></li>
-                            <li><Button onClick={() => props.history.push("/admin/jos")}>
-                                Lista Jednostek Organizacyjnych
-                            </Button></li>
-                            <li><Button onClick={() => props.history.push("/admin/add-jos")}>
-                                Dodaj Jednostkę Organizacyjną
-                            </Button></li>
-                            <li><Button onClick={() => props.history.push("/admin/jos")}>
-                                Edytuj Jednostkę Organizacyjną
-                            </Button></li>
-                    </ul>
-                </div>  
-            </div>    
-        </TabPanel>
-        </div>
-)
+    )
+    }
 }
+
+
 const flexStyle={
     display: "flex",
     flexDirection: "row", 
@@ -155,3 +205,6 @@ const useStyles= {
         width: '33%',
       
     }
+
+
+export default  UserMenu;
