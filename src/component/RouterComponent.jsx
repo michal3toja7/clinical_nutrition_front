@@ -1,6 +1,9 @@
 import React, { Component,Fragment } from 'react';
 import { BrowserRouter as  Router, Route, Switch, Redirect} from 'react-router-dom';
 import ListUserComponent from "./user/ListUserComponent";
+import ListOrderomponent from "./order/ListOrderComponent";
+import EditOrderComponent from "./order/EditOrderComponent";
+
 import AddUserComponent from "./user/AddUserComponent";
 import EditUserComponent from "./user/EditUserComponent";
 import ListJosComponent from "./jos/ListJosComponent";
@@ -107,7 +110,12 @@ class RouterComponent extends Component {
                             <SecretRoute path="/patient/study" 
                             component={(props) => <ListStudyComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
-
+                            <SecretRoute path="/orderList" 
+                            component={(props) => <ListOrderomponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/edit-order" 
+                            component={(props) => <EditOrderComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
                         </Switch>
                 </Router>
             </div>

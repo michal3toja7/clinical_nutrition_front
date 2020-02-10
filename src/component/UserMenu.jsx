@@ -109,7 +109,7 @@ render(){
                     <div style={{width: "25%"}}>   
                         <ul style={{listStyle: "none", fontWeight: "bold"}}>
                             <li><Button><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
-                            <li><Button>Zamówienia</Button></li>     
+                            <li><Button onClick={() => this.props.history.push("/orderList")}>Zamówienia</Button></li>     
                             <li><Button>Zamówienia do realizacji</Button></li>
                             <li><Button>Zamówienia zrealizowane</Button></li>
                             <li><Button>Zamówienia zapisane</Button></li>

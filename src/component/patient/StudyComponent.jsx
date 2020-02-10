@@ -8,7 +8,7 @@ import StudyService from '../../_services/StudyService';
 
 
 class StudyComponent extends Component {
-
+    _isMounted = false;
     constructor(props){
         super(props);
         if(props.pomiar!== undefined && props.pomiar!== null ){
@@ -125,7 +125,7 @@ render(){
             <TextField variant="outlined" autoFocus required type="number" label="Temperatura" margin="normal"  
             name='temperatura' value={this.state.temperatura} onChange={this.onChange} style={fieldStyleFlex}/>
 
-            <TextField variant="outlined" autoFocus required select label="Rodzaj Jednostki" margin="normal"
+            <TextField variant="outlined" autoFocus required select label="Stan Chorego" margin="normal"
             name="stanChorego" value={this.state.stanChorego} onChange={this.onChange} style={fieldStyleFlex}>
                         <MenuItem value={"NORMA"}>Normalny</MenuItem>
                         <MenuItem value={"SREDNIO_CIEZKI"}>Średnio Ciężki</MenuItem>

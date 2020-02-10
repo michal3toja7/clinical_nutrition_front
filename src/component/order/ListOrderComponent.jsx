@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import PatientService from "../../_services/PatientService";
+import OrderService from "../../_services/OrderService";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -12,26 +12,22 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
-import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 
 
-class ListPatientComponent extends Component {
+class ListOrderComponent extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            initialPatients: [],
-            patients: [],
-            title: 'Pacjenci',
+            initialOrders: [],
+            orders: [],
+            title: 'Zamówienia',
             page: 0,
             rowsPerPage: 7,
         }
         this.props.title(this.state.title);
-        this.editPatient = this.editPatient.bind(this);
-        this.addPatient = this.addPatient.bind(this);
-        this.reloadPatientList = this.reloadPatientList.bind(this);
-        this.studyPatient = this.studyPatient.bind(this);
-        
+        this.editOrder = this.editOrder.bind(this);
+        this.reloadOrderList = this.reloadOrderList.bind(this);        
     }
     
     handleChangePage = (event, newPage) => {
@@ -46,35 +42,30 @@ class ListPatientComponent extends Component {
 
 
     componentDidMount() {
-        this.reloadPatientList();
+        this.reloadOrderList();
     }
 
-    reloadPatientList() {
-        PatientService.fetchPatients()
-            .then(result => this.setState({initialPatients: result.data,
-                                           patients: result.data}));
+    reloadOrderList() {
+        OrderService.fetchOrders()
+            .then(result => this.setState({initialOrders: result.data,
+                                           orders: result.data}));
     }
 
-    editPatient(id) {
-        window.localStorage.setItem("patientId", id);
-        this.props.history.push('/edit-patient');
-    }
-    studyPatient(id) {
-        window.localStorage.setItem("patientId", id);
-        this.props.history.push('/patient/study');
+    editOrder(order) {
+        window.localStorage.setItem("currentOrder", JSON.stringify(order));
+        this.props.history.push('/edit-order');
     }
 
-    addPatient() {
-        window.localStorage.removeItem("patientId");
-        this.props.history.push('/add-patient');
-    }
 
     search= (searchString) => {
         const search = searchString.target.value;
-        this.setState({patients: this.state.initialPatients
-        .filter((data) => data.patientname.toLowerCase().includes(search.toLowerCase()) 
-        || data.imiona.toLowerCase().includes(search.toLowerCase())
-        || data.nazwisko.replace(null,' ').toLowerCase().includes(search.toLowerCase())  )})
+        this.setState({orders: this.state.initialOrders
+        .filter((data) => data.josRealizujacy.nazwa.toLowerCase().includes(search.toLowerCase()) 
+        || (data.pacjent.imiona+'').toLowerCase().includes(search.toLowerCase())
+        || (''+data.pacjent.nazwisko).toLowerCase().includes(search.toLowerCase())
+        || (data.josZamawiajacy.nazwa+'').toLowerCase().includes(search.toLowerCase()) 
+        || (data.typ+'').toLowerCase().includes(search.toLowerCase()) 
+        )})
     }
 
     render() {
@@ -87,32 +78,28 @@ class ListPatientComponent extends Component {
                             <TableHead>
                                 <TableRow>
                                     <TableCell style={{display: "none"}} >ID</TableCell>
-                                    <TableCell align="right">Imiona</TableCell>
-                                    <TableCell align="right">Nazwisko</TableCell>
-                                    <TableCell align="right">Pesel</TableCell>
-                                    <TableCell align="right">Płeć</TableCell>
-                                    <TableCell align="right">Data Urodzenia</TableCell>
-                                    <TableCell align="right">Miasto</TableCell>
-                                    <TableCell align="right">Czy Żyje</TableCell>
+                                    <TableCell align="right">Pacjent</TableCell>
+                                    <TableCell align="right">Jednostka Zamawiająca</TableCell>
+                                    <TableCell align="right">Jednostka Realizująca</TableCell>
+                                    <TableCell align="right">Data Zamówienia</TableCell>
+                                    <TableCell align="right">Data Zapotrzebowania</TableCell>
+                                    <TableCell align="right">Typ</TableCell>
                                     <TableCell align="right">Edytuj</TableCell>
-                                    <TableCell align="right">Badanie</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {(this.state.rowsPerPage > 0
-                                ? this.state.patients.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
-                                : this.state.patients).map(row => (
+                                ? this.state.orders.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
+                                : this.state.orders).map(row => (
                                     <TableRow hover key={row.id}>
                                         <TableCell style={{display: "none"}} component="th" scope="row"> {row.id} </TableCell>
-                                        <TableCell align="right"> {row.imiona} </TableCell>
-                                        <TableCell align="right">{row.nazwisko}</TableCell>
-                                        <TableCell align="right">{row.pesel}</TableCell>
-                                        <TableCell align="right">{row.plec ==='M' ? 'Mężczyzna' :'Kobieta'}</TableCell>
-                                        <TableCell align="right">{new Date(row.dataUrodzenia).toLocaleDateString('pl-PL')}</TableCell>
-                                        <TableCell align="right">{row.adresZamieszkania.miasto}</TableCell>
-                                        <TableCell align="right">{row.czyZyje  ? 'Tak' : 'Nie'}</TableCell>
-                                        <TableCell align="right" onClick={() => this.editPatient(row.id)}><CreateIcon /></TableCell>
-                                        <TableCell align="right" onClick={() => this.studyPatient(row.id)}><LocalHospitalIcon /></TableCell>
+                                        <TableCell align="right">{row.pacjent.imiona} {row.pacjent.nazwisko}</TableCell>
+                                        <TableCell align="right">{row.josZamawiajacy.nazwa}</TableCell>
+                                        <TableCell align="right">{row.josRealizujacy.nazwa}</TableCell>
+                                        <TableCell align="right">{new Date(row.dataZlecenia).toLocaleDateString('pl-PL')}</TableCell>
+                                        <TableCell align="right">{new Date(row.dataNa).toLocaleDateString('pl-PL')}</TableCell>
+                                        <TableCell align="right">{row.typ ==='DOJ'  ? 'Dojelitowe' : 'Doustne'}</TableCell>
+                                        <TableCell align="right" onClick={() => this.editOrder(row)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}
 
@@ -123,7 +110,7 @@ class ListPatientComponent extends Component {
                                     <TablePagination
                                         rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                         colSpan={8}
-                                        count={this.state.patients.length}
+                                        count={this.state.orders.length}
                                         rowsPerPage={this.state.rowsPerPage}
                                         page={this.state.page}
                                         labelRowsPerPage="Wierszy na stronę:"
@@ -138,10 +125,10 @@ class ListPatientComponent extends Component {
                             </TableFooter>             
                         </Table>
                     </TableContainer>
-                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addPatient()}> Dodaj Pacjenta</Button>
+                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.editOrder()}> Dodaj Zamówienie</Button>
                 </div>
             );
         }
 }
 
-export default ListPatientComponent;
+export default ListOrderComponent;

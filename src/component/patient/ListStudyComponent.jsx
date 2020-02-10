@@ -4,19 +4,9 @@ import PatientService from "../../_services/PatientService";
 import StudyComponent from './StudyComponent';
 import { Typography } from '@material-ui/core';
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Button from '@material-ui/core/Button';
-import CreateIcon from '@material-ui/icons/Create';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import TextField from '@material-ui/core/TextField';
-import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+
 
 
 class ListStudyComponent extends Component {
@@ -82,6 +72,7 @@ class ListStudyComponent extends Component {
                     <div style={{width: '100%',marginBottom:'20px'}}>
                     <StudyComponent key={row.id} updateList={() => this.updateList()} pomiar={row}/>
                     </div>
+
                 ))}
 
             </div>                        
