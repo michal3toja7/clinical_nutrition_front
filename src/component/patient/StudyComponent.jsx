@@ -77,19 +77,37 @@ class StudyComponent extends Component {
             });
     }
 
-    deleteStudy = (e) => {
-        e.preventDefault();
-            if(this.state.id ===''){}
-            else{            
-                StudyService.deleteStudy(this.state.id)
-                .then(res => {
-                    this.setState({message : 'Pomiar usunięto z sukcesem.',
-                                   saveIsActive: false});
-                    this.props.updateList();
-                });
-            }
-    }
+        deleteStudy = (e) => {
+            e.preventDefault();
+                if(this.state.id ===''){}
+                else{            
+                    StudyService.deleteStudy(this.state.id)
+                    .then(res => {
+                        this.setState({message : 'Pomiar usunięto z sukcesem.',
+                                    saveIsActive: false});
+                        this.props.updateList();
+                    });
+                }
+        }
 
+
+        componentDidUpdate(){
+            if(this.props.pomiar!==undefined){
+            if(this.props.pomiar.id !== this.state.id){
+                this.setState({
+                    saveIsActive: false,
+                    id: this.props.pomiar.id,
+                    idPacjenta: this.props.pomiar.idPacjenta,
+                    waga: this.props.pomiar.waga,
+                    wzrost: this.props.pomiar.waga,
+                    temperatura: this.props.pomiar.temperatura,
+                    aktywnosc: this.props.pomiar.aktywnosc,
+                    stanChorego: this.props.pomiar.stanChorego,
+                    dataPomiaru: this.props.pomiar.dataPomiaru,
+                    })
+            }
+        }
+        }
 
 
     onChange = (e) =>{

@@ -14,7 +14,7 @@ class ListStudyComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            idPacjenta: 1,
+            idPacjenta: window.localStorage.getItem("patientId"),
             initialPatients: [],
             studys: [],
             patient: {},

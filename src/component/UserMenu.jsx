@@ -14,44 +14,10 @@ import LocalDiningIcon from '@material-ui/icons/LocalDining';
 import josService from "../_services/JosService";
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-  
-    return (
-      <Typography
-        component="div"
-        role="tabpanel"
-        hidden={value !== index}
-        id={`wrapped-tabpanel-${index}`}
-        aria-labelledby={`wrapped-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box p={3}>{children}</Box>}
-      </Typography>
-    );
-  }
-  
-  TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-  };
-
-function a11yProps(index) {
-    return {
-      id: `full-width-tab-${index}`,
-      'aria-controls': `full-width-tabpanel-${index}`,
-    };
-  }
- 
-
-
-
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
 class UserMenu extends Component{
-
         constructor(props){
             super(props);
             this.state ={
@@ -59,7 +25,7 @@ class UserMenu extends Component{
                 isAdmin: true,
                 message: null,
                 joss: [],
-                currentJos: '',
+                currentJos: JSON.parse(localStorage.getItem("currentJos")),
                 value: 0,
                 fieldWidth :'48%',
                 test: {}
@@ -80,10 +46,9 @@ class UserMenu extends Component{
         this.setState({value: index});
       };
     
-      onSetJos = (e) =>{
-      this.setState({ [e.target.name]: e.target.value } )
-      josService.fetchJosById(e.target.value)
-      .then((result) =>{ window.localStorage.setItem("currentJos", JSON.stringify(result.data))})
+      onSetJos = (value) =>{
+      this.setState({ currentJos: value } )
+      window.localStorage.setItem("currentJos", JSON.stringify(value))
     };
 
 render(){
@@ -96,13 +61,22 @@ render(){
             )}
         </Tabs>
             <TabPanel value={this.state.value} index={0} >
-                <TextField variant="outlined" autoFocus style={{width:'100%'}} select label="Jednostka Organizacyjna:" margin="normal"
-                    name="currentJos" onChange={this.onSetJos}  value={this.state.currentJos} >
-                        {this.state.joss.map(row => {
-                            return <MenuItem key={row.id} value={row.id}>{row.kod} {row.nazwa}</MenuItem>
-                        })}
-                            
-                </TextField>
+            <Autocomplete
+                            id="currentJos"
+                            options={this.state.joss}
+                            name='currentJos'
+                            disableClearable
+                            value={this.state.currentJos}
+                            getOptionLabel={option => option.kod+ ' '+ option.nazwa}
+                            onChange={(event, value) => this.onSetJos(value)}
+                            style={{  display:'inline'}}
+                            margin= 'normal'
+                            getOptionDisabled={option => option.rodzaj!=='APT'}
+                            renderInput={params => (
+                        <TextField variant="outlined" margin= 'normal' style={{width: '100%'}} {...params} 
+                        label='Jednostka Organizacyjna'  />
+                        )}
+                        />
 
                 <div style= {flexStyle}>
 
@@ -205,6 +179,37 @@ const useStyles= {
         width: '33%',
       
     }
+
+    function TabPanel(props) {
+        const { children, value, index, ...other } = props;
+      
+        return (
+          <Typography
+            component="div"
+            role="tabpanel"
+            hidden={value !== index}
+            id={`wrapped-tabpanel-${index}`}
+            aria-labelledby={`wrapped-tab-${index}`}
+            {...other}
+          >
+            {value === index && <Box p={3}>{children}</Box>}
+          </Typography>
+        );
+      }
+      
+      TabPanel.propTypes = {
+        children: PropTypes.node,
+        index: PropTypes.any.isRequired,
+        value: PropTypes.any.isRequired,
+      };
+    
+    function a11yProps(index) {
+        return {
+          id: `full-width-tab-${index}`,
+          'aria-controls': `full-width-tabpanel-${index}`,
+        };
+      }
+
 
 
 export default  UserMenu;

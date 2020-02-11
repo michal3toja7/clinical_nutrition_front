@@ -13,10 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import StudyComponent from '../patient/StudyComponent';
 import OrderPosition from './OrderPosition';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
-
-
-
+import OrderService from '../../_services/OrderService';
 
 
 class EditOrderComponent extends Component {
@@ -24,10 +21,10 @@ class EditOrderComponent extends Component {
 
     constructor(props) {
         super(props)
-        
-            let tmporder=JSON.parse(localStorage.getItem("currentOrder"))
-            if(tmporder!== undefined && tmporder!== null ){
+            if(localStorage.getItem("currentOrder")!== null && localStorage.getItem("currentOrder")!=='undefined' ){
+                let tmporder=JSON.parse(localStorage.getItem("currentOrder"))
                 this.state = {
+                    id: tmporder.id,
                     patients: [],
                     josyRealizujace: [],
                     pacjent: tmporder.pacjent,
@@ -39,31 +36,24 @@ class EditOrderComponent extends Component {
                     rozpoznanie: tmporder.rozpoznanie,
                     typ: tmporder.typ,
                     status: tmporder.status,
-                    josRealizujacyNazwa: tmporder.josRealizujacy.kod+' '+tmporder.josRealizujacy.nazwa,
-                    josZamawiajacyNazwa: tmporder.josZamawiajacy.kod+' '+tmporder.josZamawiajacy.nazwa,
-                    pacjentImieNazwisko: tmporder.pacjent.imiona+' '+tmporder.pacjent.nazwisko,
                     title: 'Zamówienie',
                     newActive:false,
                 }
             }
             else{
                 this.state = {
+                    id: '',
                     josyRealizujace: [],
                     patients: [],
                     pacjent: [],
                     pomiar: [],
-                    josZamawiajacy: [],
+                    josZamawiajacy: JSON.parse(localStorage.getItem("currentJos")),
                     josRealizujacy: [],
                     dataNa: new Date(),
                     dataZlecenia: new Date(),
                     rozpoznanie: '',
                     typ: '',
                     status: '',
-                    josRealizujacyNazwa: '',
-                    josZamawiajacyNazwa: '',
-                    pacjentImieNazwisko:'',
-
-
                     title: 'Zamówienie',
                     newActive:false,
                 }
@@ -71,6 +61,8 @@ class EditOrderComponent extends Component {
 
         this.props.title(this.state.title);  
         this.addStudy = this.addStudy.bind(this);
+        this.changePatient = this.changePatient.bind(this);
+        this.saveOrder = this.saveOrder.bind(this);
     }
 
     
@@ -103,32 +95,90 @@ class EditOrderComponent extends Component {
     componentWillMount () {
         this._isMounted = false;
     }
+    componentDidUpdate(){
+        console.log(this.state.pacjent)
+        console.log(this.state.pomiar)
+    }
 
     addStudy() {
         this.setState({newActive: true})
     }
 
 
-    onChange = (e) =>{ this.setState({[e.target.name]: e.target.value})
-    console.log([e.target.name])
-    console.log(e.target.value)
-        }
-    ;
+    onChange = (e) =>{ this.setState({[e.target.name]: e.target.value})};
 
     updateStudy(){
         StudyService.fetchStudys(this.state.pacjent.id)
-        .then(result =>{ this.setState({pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
+        .then(result =>{
+            if(result.data[0]!== undefined){
+            this.setState({pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
                                         newActive:false})     
+            } else{
+                this.setState({newActive:true})
+            }
     });
     }
 
+    changePatient(choosePatient){
+        StudyService.fetchStudys(choosePatient.id)
+        .then(result =>{
+            if(result.data[0]!== undefined){
+            this.setState({ pacjent: choosePatient,
+                            pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
+                            newActive:false})     
+            } else{
+                this.setState({pacjent: choosePatient,
+                               pomiar: [],
+                               newActive:true})
+            }
+    });
+    }
+    saveOrder = (e) => {
+        let zamowienie={
+                    pacjent: this.state.pacjent,
+                    pomiar: this.state.pomiar,
+                    josZamawiajacy: this.state.josZamawiajacy,
+                    josRealizujacy: this.state.josRealizujacy,
+                    dataNa: this.state.dataNa,
+                    dataZlecenia: this.state.dataZlecenia,
+                    rozpoznanie: this.state.rozpoznanie,
+                    typ: this.state.typ,
+                    status: 'ZAP'
+        }
+        OrderService.addOrder(zamowienie)
+        .then(result => {this.setState({
+                id: result.data.id,
+                pacjent: result.data.pacjent,
+                pomiar: result.data.pomiar,
+                josZamawiajacy: result.data.josZamawiajacy,
+                josRealizujacy: result.data.josRealizujacy,
+                dataNa: result.data.dataNa,
+                dataZlecenia: result.data.dataZlecenia,
+                rozpoznanie: result.data.rozpoznanie,
+                typ: result.data.typ,
+                status: result.data.status
+        })
+        window.localStorage.setItem("currentOrder", JSON.stringify(result.data));
+        })
+    }
 
 
     render() {
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", marginTop: '-20px'}}>
-                <Typography variant="h6" fullwidth="true" align="left">Dane zamówienia:</Typography>    
+                <div>
+                <Typography variant="h4" style={{marginLeft: '25%',width:'50%', display: 'inline-block'}}  align="center">Nagłówek zamówienia</Typography>  
+                    <TextField variant="outlined" disabled select style={{width: '25%'}} label="Status zamówienia" 
+                                name="typ" value={this.state.status} >
+                                    <MenuItem value={''}>Nie zapisane</MenuItem>
+                                    <MenuItem value={"ZAP"}>Zapisane</MenuItem>
+                                    <MenuItem value={"WYS"}>Wysłane</MenuItem>
+                                    <MenuItem value={"REA"}>Realizowane</MenuItem>
+                                    <MenuItem value={"ZRE"}>Zrealizowane</MenuItem>
+                                    <MenuItem value={"ANU"}>Anulowane</MenuItem>
+                        </TextField>  
+
                     <TextField variant="outlined" autoFocus select style={{width: '100%'}} label="Typ żywienia" margin="normal"
                             name="typ" value={this.state.typ} onChange={this.onChange} >
                                 <MenuItem value={"DOU"}>Żywienie Doustne</MenuItem>
@@ -145,9 +195,10 @@ class EditOrderComponent extends Component {
                             id="pacjenci"
                             options={this.state.patients}
                             name='pacjent'
+                            disableClearable
                             value={this.state.pacjent}
                             getOptionLabel={option => option.imiona+ ' '+ option.nazwisko}
-                            onChange={(event, value) => this.setState({pacjent: value})}
+                            onChange={(event, value) => this.changePatient(value)}
                             style={{  display:'inline'}}
                             margin= 'normal'
                             renderInput={params => (
@@ -164,7 +215,7 @@ class EditOrderComponent extends Component {
                         />
                     </MuiPickersUtilsProvider>
                         <TextField variant="outlined" autoFocus type="text"  disabled style={{width: '33%'}}
-                        label="Jednostka Zamawiająca" margin="normal" name="nazwisko" value={this.state.josZamawiajacyNazwa} onChange={this.onChange} />
+                        label="Jednostka Zamawiająca" margin="normal" name="nazwisko" value={this.state.josZamawiajacy.nazwa} onChange={this.onChange} />
 
                         <TextField variant="outlined" autoFocus type="text"  required style={{width: '33%'}}
                         label="Rozpoznanie" margin="normal" name="rozpoznanie" value={this.state.rozpoznanie} onChange={this.onChange} />
@@ -173,6 +224,7 @@ class EditOrderComponent extends Component {
                             id="josRealizujacy"
                             options={this.state.josyRealizujace}
                             name='josRealizujacy'
+                            disableClearable
                             value={this.state.josRealizujacy}
                             getOptionLabel={option => option.kod+ ' '+ option.nazwa}
                             onChange={(event, value) => this.setState({josRealizujacy: value})}
@@ -190,7 +242,7 @@ class EditOrderComponent extends Component {
 
                         {this.state.newActive && (
                             <div style={{width: '100%',marginBottom:'20px'}}>
-                                <StudyComponent idPacjenta={this.state.pacjent.id} updateList={() => this.updateStudy()} />
+                                <StudyComponent idPacjenta={this.state.pacjent.id} updateList={() => this.updateStudy(this.state.pacjent.id)} />
                             </div>
                             )}
                         {!this.state.newActive && (
@@ -198,15 +250,13 @@ class EditOrderComponent extends Component {
                                 <StudyComponent idPacjenta={this.state.pacjent.id} pomiar={this.state.pomiar} />
                         </div>
                         )}
-                    <hr/>
-
-                    <div style={{width: '50%'}}>
-                        <OrderPosition typ={this.state.typ}/>
                     </div>
 
 
-
-
+                    <hr/>
+                    <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={() => this.addStudy()}>Dodaj preparat</Button>
+                    <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>
+                    <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>
                 </div>
 
 
