@@ -38,7 +38,6 @@ class StudyComponent extends Component {
                 message: null,
             }
         }
-        console.log(this.state.idPacjenta)
         this.saveStudy = this.saveStudy.bind(this);
         this.deleteStudy = this.deleteStudy.bind(this);
     }

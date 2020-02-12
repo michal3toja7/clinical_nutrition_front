@@ -11,9 +11,10 @@ import {MuiPickersUtilsProvider,KeyboardDatePicker,DateTimePicker} from '@materi
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import StudyComponent from '../patient/StudyComponent';
-import OrderPosition from './OrderPosition';
+import OrderPositionComponent from './OrderPositionComponent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import OrderService from '../../_services/OrderService';
+import OrderPosService from '../../_services/OrderPosService';
 
 
 class EditOrderComponent extends Component {
@@ -38,6 +39,8 @@ class EditOrderComponent extends Component {
                     status: tmporder.status,
                     title: 'Zamówienie',
                     newActive:false,
+                    newPosActive:false,
+                    orderPositions: []
                 }
             }
             else{
@@ -56,6 +59,8 @@ class EditOrderComponent extends Component {
                     status: '',
                     title: 'Zamówienie',
                     newActive:false,
+                    newPosActive:false,
+                    orderPositions: []
                 }
             }
 
@@ -68,7 +73,8 @@ class EditOrderComponent extends Component {
     
     componentDidMount() {
         this._isMounted = true;
-        this.load()
+        this.load();
+        this.reloadOrderList(); 
 
 
     }
@@ -95,10 +101,7 @@ class EditOrderComponent extends Component {
     componentWillMount () {
         this._isMounted = false;
     }
-    componentDidUpdate(){
-        console.log(this.state.pacjent)
-        console.log(this.state.pomiar)
-    }
+
 
     addStudy() {
         this.setState({newActive: true})
@@ -133,6 +136,22 @@ class EditOrderComponent extends Component {
             }
     });
     }
+
+    addOrderPos(){
+        this.setState({newPosActive: true})
+    }
+    updateOrders(){
+        this.reloadOrderList();
+    }
+
+
+    reloadOrderList() {
+        OrderPosService.fetchOrderPoss(this.state.id)
+            .then(result =>{ this.setState({orderPositions: result.data,
+                                            newPosActive:false})     
+        });
+    }
+
     saveOrder = (e) => {
         let zamowienie={
                     pacjent: this.state.pacjent,
@@ -238,7 +257,7 @@ class EditOrderComponent extends Component {
                         />
                         
                         <Typography variant="h6" style={{width:'75%', display: 'inline-block'}} align='left'>Aktualny pomiar pacjenta:</Typography> 
-                        <Button style={{width:'25%'}} variant="contained" color="primary" onClick={() => this.addStudy()}>Dodaj pomiar</Button>
+                        <Button style={{width:'25%'}} disabled={this.state.status !== ''} variant="contained" color="primary" onClick={() => this.addStudy()}>Dodaj pomiar</Button>
 
                         {this.state.newActive && (
                             <div style={{width: '100%',marginBottom:'20px'}}>
@@ -252,10 +271,29 @@ class EditOrderComponent extends Component {
                         )}
                     </div>
 
+                    <hr/>
+
+
+                    <div style={{width: '50%'}}>
+                    {this.state.newPosActive && (
+                <div style={posStyle}>
+                    <OrderPositionComponent zamowienieId={this.state.id} typ={this.state.typ} updateList={() => this.updateOrders()} />
+                </div>
+                )}
+
+
+                {this.state.orderPositions.map(row => (
+                    <div  key={row.id} style={posStyle}>
+                    <OrderPositionComponent key={row.id} typ={this.state.typ} updateList={() => this.updateOrders()} orderPos={row}/>
+                    </div>
+
+                ))}
+                    </div>
+
 
                     <hr/>
-                    <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={() => this.addStudy()}>Dodaj preparat</Button>
-                    <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>
+                    <Button style={{width:'25%', margin:'3%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
+                    <Button style={{width:'25%', margin:'3%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>
                     <Button style={{width:'25%', margin:'3%'}} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>
                 </div>
 
@@ -272,6 +310,13 @@ const pomiarStyle={
     //borderRadius: '10px', 
     marginBottom:'20px',
     pointerEvents: 'none'
+}
+const posStyle={
+    width: '100%',
+    marginBottom:'20px', 
+    border: '1px solid LightGray', 
+    borderRadius: '10px', 
+    padding: '5px'
 }
 
 const iconStyle={
