@@ -10,7 +10,6 @@ import Menu from '@material-ui/core/Menu';
 import signInService from "../_services/SignInService";
 import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
 import { Button } from '@material-ui/core';
-import { withRouter } from 'react-router-dom';
 
  class Navbar extends Component{
   constructor(props){
@@ -60,11 +59,6 @@ changeTitle = () => {
   render(){
     const open = Boolean(this.state.anchorEl);
 
-    const handleChange = event => {
-      this.setState({
-        auth: event.target.checked
-      })
-    };
   
     const handleMenu = event => {
       this.setState({

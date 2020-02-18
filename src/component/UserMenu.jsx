@@ -9,11 +9,9 @@ import AssignmentIndRoundedIcon from '@material-ui/icons/AssignmentIndRounded';
 import BusinessRoundedIcon from '@material-ui/icons/BusinessRounded';
 import ShoppingBasketRoundedIcon from '@material-ui/icons/ShoppingBasketRounded';
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded';
-import DescriptionRoundedIcon from '@material-ui/icons/DescriptionRounded';
 import LocalDiningIcon from '@material-ui/icons/LocalDining';
 import josService from "../_services/JosService";
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 
@@ -80,7 +78,7 @@ render(){
 
                 <div style= {flexStyle}>
 
-                    <div style={{width: "25%"}}>   
+                    <div style={{width: "33%"}}>   
                         <ul style={{listStyle: "none", fontWeight: "bold"}}>
                             <li><Button><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
                             <li><Button onClick={() => this.props.history.push("/orderList")}>Zamówienia</Button></li>     
@@ -90,7 +88,7 @@ render(){
                         </ul>
                     </div>
 
-                    <div style={{width: "25%"}}>   
+                    <div style={{width: "33%"}}>   
                         <ul style={{listStyle: "none"}}>
                             <li><Button><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
                             <li><Button onClick={() => this.props.history.push("/patients")}>
@@ -102,13 +100,7 @@ render(){
                         </ul>
                     </div>
 
-                    <div style={{width: "25%"}}>   
-                        <ul style={{listStyle: "none"}}>
-                            <li><Button><DescriptionRoundedIcon style={iconStyle}></DescriptionRoundedIcon></Button></li>
-                            <li><Button>Raporty</Button></li>     
-                        </ul>
-                    </div>
-                    <div style={{width: "25%"}}>   
+                    <div style={{width: "33%"}}>   
                         <ul style={{listStyle: "none"}}>
                             <li><Button><LocalDiningIcon style={iconStyle}></LocalDiningIcon></Button></li>
                             <li><Button  onClick={() => this.props.history.push("/preparations")}>Preparaty</Button></li>
@@ -174,11 +166,6 @@ const iconStyle={
     transform: "scale(6)", 
     margin: "60px"
 }
-const useStyles= {
-        float: 'left',
-        width: '33%',
-      
-    }
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;

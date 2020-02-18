@@ -15,6 +15,7 @@ import OrderPositionComponent from './OrderPositionComponent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import OrderService from '../../_services/OrderService';
 import OrderPosService from '../../_services/OrderPosService';
+import PositionTableComponent from './PositionTableComponent';
 
 
 class EditOrderComponent extends Component {
@@ -40,7 +41,8 @@ class EditOrderComponent extends Component {
                     title: 'Zamówienie',
                     newActive:false,
                     newPosActive:false,
-                    orderPositions: []
+                    orderPositions: [], 
+                    headerState: 'auto'
                 }
             }
             else{
@@ -60,7 +62,8 @@ class EditOrderComponent extends Component {
                     title: 'Zamówienie',
                     newActive:false,
                     newPosActive:false,
-                    orderPositions: []
+                    orderPositions: [],
+                    headerState: 'auto'
                 }
             }
 
@@ -140,15 +143,21 @@ class EditOrderComponent extends Component {
     addOrderPos(){
         this.setState({newPosActive: true})
     }
-    updateOrders(){
-        this.reloadOrderList();
+     updateOrders(){
+         this.reloadOrderList();
     }
 
 
-    reloadOrderList() {
+     reloadOrderList() {
         OrderPosService.fetchOrderPoss(this.state.id)
-            .then(result =>{ this.setState({orderPositions: result.data,
-                                            newPosActive:false})     
+            .then(result =>{
+                if(result.data[0]!==undefined){
+                this.setState({orderPositions: result.data,
+                               newPosActive:false,
+                               headerState:'none'})}
+                else{
+                this.setState({headerState:'auto'})
+                }     
         });
     }
 
@@ -186,7 +195,7 @@ class EditOrderComponent extends Component {
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", marginTop: '-20px'}}>
-                <div>
+                <div style={{pointerEvents: this.state.headerState}}>
                 <Typography variant="h4" style={{marginLeft: '25%',width:'50%', display: 'inline-block'}}  align="center">Nagłówek zamówienia</Typography>  
                     <TextField variant="outlined" disabled select style={{width: '25%'}} label="Status zamówienia" 
                                 name="typ" value={this.state.status} >
@@ -272,9 +281,9 @@ class EditOrderComponent extends Component {
                     </div>
 
                     <hr/>
+                <div style={flexStyle}>
 
-
-                    <div style={{width: '50%'}}>
+                    <div style={{width: '48%', marginRight:'2%'}}>
                     {this.state.newPosActive && (
                 <div style={posStyle}>
                     <OrderPositionComponent zamowienieId={this.state.id} typ={this.state.typ} updateList={() => this.updateOrders()} />
@@ -282,14 +291,24 @@ class EditOrderComponent extends Component {
                 )}
 
 
-                {this.state.orderPositions.map(row => (
+                {this.state.orderPositions.map((row,index) => (
                     <div  key={row.id} style={posStyle}>
-                    <OrderPositionComponent key={row.id} typ={this.state.typ} updateList={() => this.updateOrders()} orderPos={row}/>
+                    <OrderPositionComponent key={row.id} typ={this.state.typ} pozycja={index+1} updateList={() => this.updateOrders()} orderPos={row}/>
                     </div>
 
                 ))}
                     </div>
 
+                    <div style={{width: '48%'}}>
+                    {this.state.orderPositions.length > 0 && 
+                        <div style={posStyle}>
+                            <PositionTableComponent key={this.state.orderPositions.length} zamowienieId={this.state.id} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrders()} />
+                        </div>
+                    }
+                    </div>
+
+
+                    </div>
 
                     <hr/>
                     <Button style={{width:'25%', margin:'3%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
@@ -316,14 +335,7 @@ const posStyle={
     marginBottom:'20px', 
     border: '1px solid LightGray', 
     borderRadius: '10px', 
-    padding: '5px'
-}
-
-const iconStyle={
-    clear: "both",
-    transform: "scale(6)", 
-    margin: "60px",
-    float: 'left'
+    padding: '5px',
 }
 
 const flexStyle={

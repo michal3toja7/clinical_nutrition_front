@@ -75,7 +75,7 @@ class ListOrderComponent extends Component {
                 width="25%" type="text" className="input" placeholder="Szukaj..." onChange={this.search}/>
                     <TableContainer component={Paper}>
                         <Table aria-label="custom pagination table">
-                            <TableHead>
+                            <TableHead >
                                 <TableRow>
                                     <TableCell style={{display: "none"}} >ID</TableCell>
                                     <TableCell align="right">Pacjent</TableCell>
