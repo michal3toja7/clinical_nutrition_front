@@ -125,7 +125,7 @@ class ListOrderComponent extends Component {
                             </TableFooter>             
                         </Table>
                     </TableContainer>
-                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.editOrder()}> Dodaj Zamówienie</Button>
+                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.editOrder(null)}> Dodaj Zamówienie</Button>
                 </div>
             );
         }

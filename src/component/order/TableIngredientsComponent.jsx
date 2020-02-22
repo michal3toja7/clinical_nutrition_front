@@ -36,7 +36,7 @@ const header=[
  ]
 
 
-class PositionTableComponent extends Component {
+class TableIngredientsComponent extends Component {
     _isMounted = false;
 
     constructor(props) {
@@ -166,4 +166,4 @@ const flexStyle={
     flexWrap: "wrap",
 }
 
-export default PositionTableComponent;
+export default TableIngredientsComponent;

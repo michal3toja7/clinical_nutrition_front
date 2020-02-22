@@ -110,8 +110,6 @@ class OrderPosition extends Component {
                 else{            
                     OrderPosService.deleteOrderPos(this.state.id)
                     .then(res => {
-                        this.setState({message : 'Pozycję usunięto z sukcesem.',
-                                    saveIsActive: false});
                         this.props.updateList();
                     });
                 }
