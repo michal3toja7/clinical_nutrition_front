@@ -204,6 +204,8 @@ class OrderHeaderComponent extends Component {
                             name="typ" value={this.state.typ} onChange={this.onChange} >
                                 <MenuItem value={"DOU"}>Żywienie Doustne</MenuItem>
                                 <MenuItem value={"DOJ"}>Żywienie Dojelitowe</MenuItem>
+                                <MenuItem value={"WOR"}>Zlecenie na worek RTU</MenuItem>
+
                     </TextField>
 
                     <MuiPickersUtilsProvider utils={DateFnsUtils} >
