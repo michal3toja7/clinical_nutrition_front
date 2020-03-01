@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
-import OrderPositionComponent from './OrderPositionComponent';
-import OrderPosService from '../../_services/OrderPosService';
-import TableIngredientsComponent from './TableIngredientsComponent';
-import TableSupplyComponent from './TableSupplyComponent';
-import OrderHeaderComponent from './OrderHeaderComponent';
-import TableHelpComponent from './TableHelpComponent';
+import OrderPositionRtuComponent from './OrderPositionRtuComponent';
+import OrderPosRtuService from '../../_services/OrderPosRtuService';
+import TableIngredientsComponent from '../order/TableIngredientsComponent';
+import TableSupplyComponent from '../order/TableSupplyComponent';
+import OrderHeaderComponent from '../order/OrderHeaderComponent';
+import TableHelpComponent from '../order/TableHelpComponent';
 
 
 
@@ -20,48 +20,10 @@ class EditOrderComponent extends Component {
 
     constructor(props) {
         super(props)
-            if(localStorage.getItem("currentOrder")!== 'null' && localStorage.getItem("currentOrder")!==undefined ){
-                let tmporder=JSON.parse(localStorage.getItem("currentOrder"))
-                this.state = {
-                    order: tmporder,
-                    id: tmporder.id,
-                    patients: [],
-                    josyRealizujace: [],
-                    pacjent: tmporder.pacjent,
-                    pomiar: tmporder.pomiar,
-                    josZamawiajacy: tmporder.josZamawiajacy,
-                    josRealizujacy: tmporder.josRealizujacy,
-                    dataNa: tmporder.dataNa,
-                    dataZlecenia: tmporder.dataZlecenia,
-                    rozpoznanie: tmporder.rozpoznanie,
-                    typ: tmporder.typ,
-                    status: tmporder.status,
-                    title: 'Zamówienie',
-                    newActive:false,
-                    newPosActive:false,
-                    orderPositions: [], 
-                    headerState: 'auto'
-                }
+            if(localStorage.getItem("currentOrderRTU")!== 'null' && localStorage.getItem("currentOrderRTU")!==undefined ){
+                this.state = JSON.parse(localStorage.getItem("currentOrderRTU"))
             }
-            else{
-                this.state = {
-                    id: '',
-                    pacjent: [],
-                    pomiar: [],
-                    josZamawiajacy: JSON.parse(localStorage.getItem("currentJos")),
-                    josRealizujacy: [],
-                    dataNa: new Date(),
-                    dataZlecenia: new Date(),
-                    rozpoznanie: '',
-                    typ: '',
-                    status: '',
-                    title: 'Zamówienie',
-                    newActive:false,
-                    newPosActive:false,
-                    orderPositions: [],
-                    headerState: 'auto'
-                }
-            }
+
 
         this.props.title(this.state.title);  
         this.addStudy = this.addStudy.bind(this);
@@ -72,6 +34,28 @@ class EditOrderComponent extends Component {
     componentDidMount() {
         this._isMounted = true;
         this.reloadOrderPos(); 
+    }
+    changeToEditOrder(){
+        if(this.state.typ !== 'WOR'){
+            let tmpOrder={
+                id: this.state.id,
+                pacjent: this.state.pacjent,
+                pomiar: this.state.pomiar,
+                josZamawiajacy: this.state.josZamawiajacy,
+                josRealizujacy: this.state.josRealizujacy,
+                dataNa: this.state.dataNa,
+                dataZlecenia: this.state.dataZlecenia,
+                rozpoznanie: this.state.rozpoznanie,
+                typ: this.state.typ,
+                status: this.state.status,
+                }
+            window.localStorage.setItem("currentOrder", JSON.stringify(tmpOrder));
+            this.props.history.replace('/edit-order');
+            }
+    }
+
+    componentDidUpdate(){
+        this.changeToEditOrder()
     }
 
     componentWillMount () {
@@ -119,7 +103,7 @@ class EditOrderComponent extends Component {
 
      reloadOrderPos() {
         if(this.state.id!==''){
-            OrderPosService.fetchOrderPoss(this.state.id)
+            OrderPosRtuService.fetchOrderPosRtus(this.state.id)
                 .then(result =>{
                     if(result.data[0]!==undefined){
                     this.setState({orderPositions: result.data,
@@ -127,6 +111,7 @@ class EditOrderComponent extends Component {
                                 headerState:'none'})}
                     else{
                     this.setState({orderPositions: result.data,
+                        newPosActive:false,
                         headerState:'auto'})
                     }     
             });
@@ -148,33 +133,17 @@ class EditOrderComponent extends Component {
                     <div style={{width: '48%', marginRight:'2%'}}>
                     {this.state.newPosActive && (
                 <div style={posStyle}>
-                    <OrderPositionComponent zamowienieId={this.state.id} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                    <OrderPositionRtuComponent zamowienieId={this.state.id} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
                 </div>
                 )}
 
 
                 {this.state.orderPositions.map((row,index) => (
                     <div  key={row.id} style={posStyle}>
-                    <OrderPositionComponent key={row.id} typ={this.state.typ} pozycja={index+1} updateList={() => this.updateOrderPoss()} orderPos={row}/>
+                    <OrderPositionRtuComponent key={row.id} typ={this.state.typ} pozycja={index+1} updateList={() => this.updateOrderPoss()} orderPosRtu={row}/>
                     </div>
 
                 ))}
-                    </div>
-
-                    <div style={{width: '48%', marginLeft:'2%'}}>
-                    {this.state.orderPositions.length > 0 && 
-                        <div style={posStyle}>
-                            <TableIngredientsComponent key={this.state.orderPositions.length} zamowienieId={this.state.id} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
-                        </div>
-                    }
-                    </div>
-
-                    <div style={{width: '100%'}}>
-                    {this.state.orderPositions.length > 0 && 
-                        <div style={posStyle}>
-                            <TableSupplyComponent key={this.state.orderPositions.length} zamowienieId={this.state.id} pomiar={this.state.pomiar} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
-                        </div>
-                    }
                     </div>
 
                     </div>
@@ -184,7 +153,7 @@ class EditOrderComponent extends Component {
                             <TableHelpComponent pacjent={this.state.pacjent} pomiar={this.state.pomiar} />
                         </div>
                     <hr/>
-                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
+                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP' || this.state.orderPositions[0] !== undefined} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj worek</Button>
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="secondary" onClick={this.deleteOrder}>Usuń Zamówienie</Button>                    
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>

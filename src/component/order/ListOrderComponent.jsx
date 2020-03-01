@@ -98,7 +98,7 @@ class ListOrderComponent extends Component {
                                         <TableCell align="right">{row.josRealizujacy.nazwa}</TableCell>
                                         <TableCell align="right">{new Date(row.dataZlecenia).toLocaleDateString('pl-PL')}</TableCell>
                                         <TableCell align="right">{new Date(row.dataNa).toLocaleDateString('pl-PL')}</TableCell>
-                                        <TableCell align="right">{row.typ ==='DOJ'  ? 'Dojelitowe' : 'Doustne'}</TableCell>
+                                        <TableCell align="right">{row.typ ==='DOJ'  ? 'Dojelitowe' : (row.typ === 'WOR'? 'Worek RTU' : 'Doustne')}</TableCell>
                                         <TableCell align="right" onClick={() => this.editOrder(row)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}

@@ -62,7 +62,6 @@ class EditOrderComponent extends Component {
                     headerState: 'auto'
                 }
             }
-
         this.props.title(this.state.title);  
         this.addStudy = this.addStudy.bind(this);
         this.orderHeaderComponent = React.createRef();
@@ -72,6 +71,17 @@ class EditOrderComponent extends Component {
     componentDidMount() {
         this._isMounted = true;
         this.reloadOrderPos(); 
+    }
+
+    changeToEditOrderRtu(){
+        if(this.state.typ==='WOR'){
+            window.localStorage.setItem("currentOrderRTU",JSON.stringify(this.state))
+            this.props.history.replace('/edit-orderRtu');
+        }
+    }
+    
+    componentDidUpdate(){
+        this.changeToEditOrderRtu();
     }
 
     componentWillMount () {

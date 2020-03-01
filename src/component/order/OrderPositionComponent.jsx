@@ -106,7 +106,7 @@ class OrderPosition extends Component {
 
         deleteOrderPos = (e) => {
             e.preventDefault();
-                if(this.state.id ===''){}
+                if(this.state.id ===''){this.props.updateList();}
                 else{            
                     OrderPosService.deleteOrderPos(this.state.id)
                     .then(res => {

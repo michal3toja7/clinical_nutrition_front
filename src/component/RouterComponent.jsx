@@ -23,6 +23,7 @@ import signInService from "../_services/SignInService";
 import UserMenu from "./UserMenu";
 import PremissionsPanel from "./user/PremissionsPanel";
 import ListStudyComponent from "./patient/ListStudyComponent";
+import EditOrderRtuComponent from "./orderRtu/EditOrderRtuComponent";
 
 
 
@@ -34,7 +35,7 @@ class RouterComponent extends Component {
             this.state ={
               time: '',
             }
-            
+            this.router = React.createRef();
         }
 
         componentWillMount(){
@@ -45,12 +46,15 @@ class RouterComponent extends Component {
         updateTitle(newTitle){
           this.props.title(newTitle)
         }
+        goBack(){
+          this.router.current.history.goBack()
+        }
   
         
     render(){
         return(
             <div style={style}>
-                <Router>
+                <Router ref={this.router}>
                         <Switch>
                             <Redirect from="/" exact to="/home"/>
                             <Route title={'testowanko'} path="/login" exact 
@@ -115,6 +119,9 @@ class RouterComponent extends Component {
                             />
                             <SecretRoute path="/edit-order" 
                             component={(props) => <EditOrderComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
+                            />
+                            <SecretRoute path="/edit-orderRTU" 
+                            component={(props) => <EditOrderRtuComponent {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
                         </Switch>
                 </Router>

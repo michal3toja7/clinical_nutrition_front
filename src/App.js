@@ -12,12 +12,18 @@ class App extends Component {
         super(props)
         this.state = {
           title: "",
+          history:[],
         }
+        this.appRouter = React.createRef();
       }
       
      updateTitle(newTitle){
        if(this.state.title!==newTitle)
           this.setState({title: newTitle})
+      }
+
+      goBack(){
+        this.appRouter.current.goBack()
       }
 
       
@@ -27,9 +33,9 @@ class App extends Component {
         <div className="App">
           <header className="App-header">
             <div>
-              <NavBar title={this.state.title} />
+              <NavBar goBack={() => this.goBack()} title={this.state.title} />
                 <Container>
-                  <AppRouter title={(newTitle) => this.updateTitle(newTitle)}/>
+                  <AppRouter ref={this.appRouter} title={(newTitle) => this.updateTitle(newTitle)}/>
                 </Container>
             </div>
           </header>

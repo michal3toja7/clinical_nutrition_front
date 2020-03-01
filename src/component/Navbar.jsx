@@ -89,7 +89,7 @@ changeTitle = () => {
               {this.state.auth && (
                   <div style={{width: "33%"}}>
                     <div style={{width: "25%"}}>
-                    <Button>
+                    <Button onClick={() => this.props.goBack()}>
                       <ReplyRoundedIcon
                       style={iconStyle}>
                       </ReplyRoundedIcon></Button>
