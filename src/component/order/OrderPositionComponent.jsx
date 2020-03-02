@@ -131,7 +131,7 @@ class OrderPosition extends Component {
                 <div component={Paper} style={{width:"100%", textB: 'white'}}>
                 <Typography variant="h6" fullwidth="true" align="left">Preparat {this.props.pozycja}:</Typography>    
 
-                    <Autocomplete id="preparat" options={this.state.preparaty} name='preparat' value={this.state.preparat} getOptionLabel={option => (option.nazwa+'')}
+                    <Autocomplete id={"preparat"+this.state.id} options={this.state.preparaty} name='preparat' value={this.state.preparat} getOptionLabel={option => (option.nazwa+'')}
                         onChange={(event, value) => this.setState({preparat: value})} style={{  display:'inline'}} margin= 'dense' 
 
                         renderInput={params => (
@@ -184,21 +184,6 @@ class OrderPosition extends Component {
         )
         }
 }
-const pomiarStyle={
-    width: '100%', 
-    paddingTop: '10px',
-   // border: '2px solid grey',  
-    //borderRadius: '10px', 
-    marginBottom:'20px'
-}
-
-const iconStyle={
-    clear: "both",
-    transform: "scale(6)", 
-    margin: "60px",
-    float: 'left'
-}
-
 const flexStyle={
     display: "flex",
     flexDirection: "row", 

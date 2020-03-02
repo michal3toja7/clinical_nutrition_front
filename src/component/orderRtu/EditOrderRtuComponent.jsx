@@ -3,8 +3,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import OrderPositionRtuComponent from './OrderPositionRtuComponent';
 import OrderPosRtuService from '../../_services/OrderPosRtuService';
-import TableIngredientsComponent from '../order/TableIngredientsComponent';
-import TableSupplyComponent from '../order/TableSupplyComponent';
+import TableIngredientsRtuComponent from './TableIngredientsRtuComponent';
 import OrderHeaderComponent from '../order/OrderHeaderComponent';
 import TableHelpComponent from '../order/TableHelpComponent';
 
@@ -100,6 +99,9 @@ class EditOrderComponent extends Component {
          this.reloadOrderPos();
     }
 
+    getSupply(supply){
+        this.setState({supply: supply})
+    }
 
      reloadOrderPos() {
         if(this.state.id!==''){
@@ -133,17 +135,27 @@ class EditOrderComponent extends Component {
                     <div style={{width: '48%', marginRight:'2%'}}>
                     {this.state.newPosActive && (
                 <div style={posStyle}>
-                    <OrderPositionRtuComponent zamowienieId={this.state.id} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                    <OrderPositionRtuComponent zamowienieId={this.state.id} typ={this.state.typ} 
+                    getSupply={(supply) => this.getSupply(supply)} updateList={() => this.updateOrderPoss()} />
                 </div>
                 )}
 
 
                 {this.state.orderPositions.map((row,index) => (
                     <div  key={row.id} style={posStyle}>
-                    <OrderPositionRtuComponent key={row.id} typ={this.state.typ} pozycja={index+1} updateList={() => this.updateOrderPoss()} orderPosRtu={row}/>
+                    <OrderPositionRtuComponent key={row.id} typ={this.state.typ} pozycja={index+1} 
+                    getSupply={(supply) => this.getSupply(supply)} updateList={() => this.updateOrderPoss()} orderPosRtu={row}/>
                     </div>
 
                 ))}
+                    </div>
+
+                    <div style={{width: '48%', marginLeft:'2%'}}>
+                    {this.state.orderPositions.length > 0 && 
+                        <div style={posStyle}>
+                            <TableIngredientsRtuComponent supply={this.state.supply} zamowienieId={this.state.id} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                        </div>
+                    }
                     </div>
 
                     </div>
@@ -165,14 +177,7 @@ class EditOrderComponent extends Component {
         )
         }
 }
-const pomiarStyle={
-    width: '100%', 
-    paddingTop: '10px',
-   // border: '2px solid grey',  
-    //borderRadius: '10px', 
-    marginBottom:'20px',
-    pointerEvents: 'none'
-}
+
 const posStyle={
     width: '100%',
     marginBottom:'20px', 

@@ -1,11 +1,8 @@
 import React, { Component } from 'react'
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableContainer from '@material-ui/core/TableContainer';
 import { Typography } from '@material-ui/core';
 
 
@@ -115,6 +112,8 @@ class TableHelpComponent extends Component {
             case 'CIEZKI': 
                 stanChorego=1.2;
                 break;
+            default:
+                stanChorego=1;
         }
         switch(this.state.pomiar.aktywnosc){
             case 'LEZY': 
@@ -126,6 +125,8 @@ class TableHelpComponent extends Component {
             case 'PELNA_AKTYWNOSC': 
                 aktywnosc=1.2;
                 break;
+            default:
+                aktywnosc=1;
         }
         switch(true){
             case (temperatura <= 37.5): 
@@ -140,6 +141,8 @@ class TableHelpComponent extends Component {
             case (temperatura > 39.5): 
                 temp=1.3;
                 break;
+            default:
+                temp=1;            
         }
         wynik= wynik * aktywnosc * stanChorego * temp
 
@@ -200,17 +203,16 @@ class TableHelpComponent extends Component {
             background: 'lightgrey',
 
         }
-        let suma=0
         return (
 
         <div>
             <div style={przycisk} onClick={() => this.onClick()}>
-                <Typography variant="body1" fullwidth align="center"><b>TABELA ZAPOTRZEBOWAŃ</b></Typography>
+                <Typography variant="body1" align="center"><b>TABELA ZAPOTRZEBOWAŃ</b></Typography>
             </div>
 
             <div style={panel} onClick={() => this.onClick()}>
 
-                        <Typography variant="body1" fullwidth align="center"><b>Zapotrzebowanie energetyczne (kcal/dzień)</b></Typography>
+                        <Typography variant="body1" align="center"><b>Zapotrzebowanie energetyczne (kcal/dzień)</b></Typography>
                         <Table size='small'>
                             <TableBody>
                                 <TableRow >
@@ -227,7 +229,7 @@ class TableHelpComponent extends Component {
                                 </TableRow> 
                             </TableBody>
                         </Table>
-                        <Typography variant="body1" fullwidth align="center"><b>Podaż substancji organicznych (g/dzień)</b></Typography>
+                        <Typography variant="body1" align="center"><b>Podaż substancji organicznych (g/dzień)</b></Typography>
                         <Table size='small'>
                             <TableBody>
                                 <TableRow >
@@ -244,7 +246,7 @@ class TableHelpComponent extends Component {
                                 </TableRow> 
                             </TableBody>
                         </Table>
-                        <Typography variant="body1" fullwidth align="center"><b>Zapotrzebowanie na płyny (ml/dzień)</b></Typography>
+                        <Typography variant="body1" align="center"><b>Zapotrzebowanie na płyny (ml/dzień)</b></Typography>
                         <Table size='small'>
                             <TableBody>
                                 <TableRow >
@@ -261,7 +263,7 @@ class TableHelpComponent extends Component {
                                 </TableRow> 
                             </TableBody>
                         </Table>
-                        <Typography variant="body1" fullwidth align="center"><b>Podaż makroskładników (mmol/dzień)</b></Typography>
+                        <Typography variant="body1" align="center"><b>Podaż makroskładników (mmol/dzień)</b></Typography>
                         <Table size='small'>
                             <TableBody>
                                 <TableRow >

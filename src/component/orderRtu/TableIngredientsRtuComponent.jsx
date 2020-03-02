@@ -7,24 +7,22 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableContainer from '@material-ui/core/TableContainer';
 
-
-const header=[
+const header=[    {nazwa: 'Aminokwasy (g)'},
+{nazwa: 'Azot (g)'},
+{nazwa: 'Glukoza (g)'},
+{nazwa: 'Lipidy (g)'},
+{nazwa: 'Energia Całkowita (kcal)'},
+{nazwa: 'Energia Pozabiałkowa (kcal)'},]
+ const zawartosc=[
     {nazwa: 'Aminokwasy (g)'},
     {nazwa: 'Azot (g)'},
     {nazwa: 'Glukoza (g)'},
     {nazwa: 'Lipidy (g)'},
-    {nazwa: 'Błonnik (g)'},
     {nazwa: 'Energia Całkowita (kcal)'},
-    {nazwa: ''},
-    {nazwa: 'Na (mg)'},
-    {nazwa: 'K (mg)'},
-    {nazwa: 'Cl (mg)'},
-    {nazwa: 'Mg (mg)'},
-    {nazwa: 'Ca (mg)'},
-    {nazwa: 'P (mg)'},
-    {nazwa: 'Fe (mg)'},
-    {nazwa: 'Zn (mg)'},
-    {nazwa: ''},
+    {nazwa: 'Energia Pozabiałkowa (kcal)'},
+ ]
+
+ const elektrolity=[
     {nazwa: 'Na (mmol)'},
     {nazwa: 'K (mmol)'},
     {nazwa: 'Cl (mmol)'},
@@ -35,6 +33,21 @@ const header=[
     {nazwa: 'Zn (mmol)'},
  ]
 
+ const podazDoba=[
+    {nazwa: 'Podaż na dobę'},
+    {nazwa: 'Aminokwasy g/kg/doba'},
+    {nazwa: 'Glukoza g/kg/doba'},
+    {nazwa: 'Lipidy g/kg/doba'},
+    {nazwa: 'Sód mmol/kg/doba'},
+    {nazwa: 'Potas mmol/kg/doba'},
+    {nazwa: 'Chlor mmol/kg/doba'},
+    {nazwa: 'Magnez mmol/kg/doba'},
+    {nazwa: 'Wapń mmol/kg/doba'},
+    {nazwa: 'Fosfor mmol/kg/doba'},
+    {nazwa: 'Żelazo mmol/kg/doba'},
+    {nazwa: 'Cynk mmol/kg/doba'},
+    {nazwa: 'Płyny ml/doba'},
+ ]
 
 class TableIngredientsComponent extends Component {
     _isMounted = false;
@@ -42,6 +55,8 @@ class TableIngredientsComponent extends Component {
     constructor(props) {
         super(props)
             this.state = {
+              prevProps: [],
+              supply: [],
               table: JSON.parse(JSON.stringify(header)),
               mCa: 40.078,
               mCl: 35.453,
@@ -60,61 +75,75 @@ class TableIngredientsComponent extends Component {
 
     }
 
-    componentDidpdate(){
-        this.buildTable()
-        
+    componentDidUpdate(){
+        if(this.props !== this.state.prevProps){
+           this.buildTable()
+        }
+                    
     }
 
     componentWillMount() {
         this._isMounted = false;
       }
+      getSupplyData(nazwa){
+          let suma=0
+          this.props.supply.map(row => {
+            suma+= row.ilosc*row.dodatek[nazwa]
+            console.log(nazwa + ': ' +row.dodatek[nazwa])
+          })
+          return suma
+      }
 
       buildTable(){
-          let tmpTable= JSON.parse(JSON.stringify(header))
-          let count=1;        
-          this.props.orderPos.map(row =>{
-            const ileMl= (row.objetosc * Math.round(24/row.coIleH,0))/100
+            let tmpWorek=this.props.orderPos[0].worekPreparat
+           // const ileMl= (row.objetosc * Math.round(24/row.coIleH,0))/100
+           let zawartosc=[
+                {nazwa: 'Aminokwasy (g)', worek: tmpWorek.aa, dodatki: this.getSupplyData('aminokwasy')},
+                {nazwa: 'Azot (g)', worek: tmpWorek.azot, dodatki: (this.getSupplyData('aminokwasy')/6.25)},
+                {nazwa: 'Glukoza (g)', worek: tmpWorek.weglowodany, dodatki: this.getSupplyData('glukoza')},
+                {nazwa: 'Lipidy (g)', worek: tmpWorek.tluszcze, dodatki: this.getSupplyData('tluszcz')},
+                {nazwa: 'Energia Całkowita (kcal)', worek: tmpWorek.wartoscEnergetycznaCalkowita, dodatki: ((this.getSupplyData('aminokwasy')*4)
+                                                                                    + (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*9))},
+                {nazwa: 'Energia Pozabiałkowa (kcal)', worek: tmpWorek.wartoscEnergetycznaPozabialkowa, dodatki: (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*10)},
+           ]
+           //this.getSupplyData('potas')
+
+
+           const elektrolity=[
+            {nazwa: 'Na (mmol)', worek: tmpWorek.sod},
+            {nazwa: 'K (mmol)', worek: tmpWorek.potas},
+            {nazwa: 'Mg (mmol)', worek: tmpWorek.magnez},
+            {nazwa: 'Ca (mmol)', worek: tmpWorek.wapn},
+            {nazwa: 'P (mmol)', worek: tmpWorek.fosforany},
+         ]
+           console.log(this.props)
+
+           /*
             tmpTable[0]['Preparat'+count]=row.preparat.bialko*ileMl                              // Aminokwasy (g)
             tmpTable[1]['Preparat'+count]=(row.preparat.bialko*ileMl)/6.25                       // Azot (g)
             tmpTable[2]['Preparat'+count]=row.preparat.weglowodany*ileMl                         // Glukoza (g)
             tmpTable[3]['Preparat'+count]=row.preparat.tluszcz*ileMl                             // Lipidy (g)
             tmpTable[4]['Preparat'+count]=row.preparat.blonnik*ileMl                             // Błonnik (g)
             tmpTable[5]['Preparat'+count]=row.preparat.wartoscEnergetyczna*ileMl*100             // Energia Całk (kcal)
-            tmpTable[6]['Preparat'+count]=''                                                    // 
-            tmpTable[7]['Preparat'+count]=row.preparat.sod*ileMl                                 // Na (mg)
-            tmpTable[8]['Preparat'+count]=row.preparat.potas*ileMl                               // K (mg)
-            tmpTable[9]['Preparat'+count]=row.preparat.chlor*ileMl                               // Cl (mg)
-            tmpTable[10]['Preparat'+count]=row.preparat.magnez*ileMl                             // Mg (mg)
-            tmpTable[11]['Preparat'+count]=row.preparat.wapn*ileMl                               // Ca (mg)
-            tmpTable[12]['Preparat'+count]=row.preparat.fosfor*ileMl                             // P (mg)
-            tmpTable[13]['Preparat'+count]=row.preparat.zelazo*ileMl                             // Fe (mg)
-            tmpTable[14]['Preparat'+count]=row.preparat.cynk*ileMl                               // Zn (mg)
-            tmpTable[15]['Preparat'+count]=''                                                   // 
-            tmpTable[16]['Preparat'+count]=(row.preparat.sod*ileMl)/this.state.mNa               // Na (mmol)
-            tmpTable[17]['Preparat'+count]=(row.preparat.potas*ileMl)/this.state.mK              // K (mmol)
-            tmpTable[18]['Preparat'+count]=(row.preparat.chlor*ileMl)/this.state.mCl             // Cl (mmol)
-            tmpTable[19]['Preparat'+count]=(row.preparat.magnez*ileMl)/this.state.mMg            // Mg (mmol)
-            tmpTable[20]['Preparat'+count]=(row.preparat.wapn*ileMl)/this.state.mCa              // Ca (mmol)
-            tmpTable[21]['Preparat'+count]=(row.preparat.fosfor*ileMl)/this.state.mP             // P (mmol)
-            tmpTable[22]['Preparat'+count]=(row.preparat.zelazo*ileMl)/this.state.mFe            // Fe (mmol)
-            tmpTable[23]['Preparat'+count]=(row.preparat.cynk*ileMl)/this.state.mZn              // Zn (mmol)         
+      
 
-            return count ++
-          })
+   
 
           tmpTable.map(row =>{
-            let suma =0 
+            let suma=0
                 Object.keys(row).map(col =>
                 isNaN(row[col])? '': suma= suma+ row[col]
                 )
             row['Suma']=suma
             })
-
-          if((JSON.stringify(this.state.table) !== JSON.stringify(tmpTable))){
+*/
+ //         if((JSON.stringify(this.state.table) !== JSON.stringify(tmpTable))){
+              
                 this.setState({
-                    table: tmpTable
-                })
-          }
+                    table: zawartosc,
+                    prevProps: this.props,
+               })
+     //    }
       }
 
 
@@ -126,6 +155,7 @@ class TableIngredientsComponent extends Component {
 
 
     render() {
+        let suma=0
         return (
             <div style={flexStyle}>
                         <TableContainer component={Paper}>

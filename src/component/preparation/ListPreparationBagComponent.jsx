@@ -12,7 +12,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 
 class ListPreparationBagComponent extends Component {

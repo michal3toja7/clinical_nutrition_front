@@ -40,22 +40,6 @@ componentWillUnmount() {
   clearInterval(this.interval);
 }
 
-
-changeTitle = () => {
-    switch(window.location.pathname){
-      case "/login":
-          return 'Zaloguj się';
-      case "/admin/users":
-        return 'Użytkownicy';
-      case "/admin/edit-user":
-        return 'Edycja użytkownika';
-      case "/admin/add-user":
-          return 'Dodawanie użytkownika';
-    }
-  }
-
- 
-
   render(){
     const open = Boolean(this.state.anchorEl);
 
@@ -79,7 +63,6 @@ changeTitle = () => {
       signInService.logout();
     };
 
-   // let title = this.changeTitle();
 
     return (
       <div className={useStyles.root}>

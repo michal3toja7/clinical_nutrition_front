@@ -103,7 +103,7 @@ class OrderPosRtuitionRtuComponent extends Component {
             .then(res => wait(100))
         }
 
-        deleteOrderPosRtu = (e) => {
+        deleteOrderPosRtu = (e) =>{
             e.preventDefault();
                 if(this.state.id ===''){this.props.updateList();}
                 else{            
@@ -123,7 +123,8 @@ class OrderPosRtuitionRtuComponent extends Component {
                     .then(result =>{
                         if(result.data[0]!==undefined){
                         this.setState({dodatki: result.data.sort((a,b) => a.dodatek.nazwa.localeCompare(b.dodatek.nazwa)),
-                                     newActive:false})}
+                                     newActive:false})
+                        this.props.getSupply(result.data)}
                         else{
                         this.setState({dodatki: result.data,
                                         newActive:false})
@@ -170,6 +171,13 @@ class OrderPosRtuitionRtuComponent extends Component {
                         label="Czas wlewu (h)" margin="dense" name="czasWlewu" value={this.state.czasWlewu} onChange={this.onChange} /> 
                         <hr/>
 
+                        
+                        {this.state.dodatki.map((row,index) => (
+                            <div  key={row.id} >
+                            <OrderPositionSuppComponent key={row.id} updateList={() => this.reloadOrderSupp()} orderPosSupp={row}/>
+                            </div>
+
+                        ))}
                         <div>
                         {this.state.newActive && (
                         <div>
@@ -178,12 +186,7 @@ class OrderPosRtuitionRtuComponent extends Component {
                         )}
                         </div>
 
-                        {this.state.dodatki.map((row,index) => (
-                            <div  key={row.id} >
-                            <OrderPositionSuppComponent key={row.id} updateList={() => this.reloadOrderSupp()} orderPosSupp={row}/>
-                            </div>
 
-                        ))}
 
 
 

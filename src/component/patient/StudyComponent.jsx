@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import DateFnsUtils from '@date-io/date-fns';
-import {MuiPickersUtilsProvider,KeyboardDatePicker,DateTimePicker} from '@material-ui/pickers';
+import {MuiPickersUtilsProvider,DateTimePicker} from '@material-ui/pickers';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';

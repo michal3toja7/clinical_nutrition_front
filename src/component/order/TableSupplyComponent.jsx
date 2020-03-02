@@ -78,7 +78,7 @@ class TableSupplyComponent extends Component {
             tmpTable[12]['Preparat'+count]=row.objetosc                               // Płyny ml/kg/doba
        
 
-            count ++
+            return count ++
           })
 
           tmpTable.map(row =>{
@@ -87,6 +87,7 @@ class TableSupplyComponent extends Component {
                 isNaN(row[col])? '': suma= suma+ row[col]
                 )
             row['Suma']=suma
+            return true
             })
             tmpTable[0]['Suma'] = 'Suma'
           if((JSON.stringify(this.state.table) !== JSON.stringify(tmpTable))){
@@ -105,7 +106,6 @@ class TableSupplyComponent extends Component {
 
 
     render() {
-        let suma=0
         return (
             <div style={flexStyle}>
                         <TableContainer component={Paper}>

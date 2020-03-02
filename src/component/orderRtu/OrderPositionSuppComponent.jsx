@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import OrderPosSuppService from "../../_services/OrderPosSuppService";
 import SupplementService from "../../_services/SupplementService";
-import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import DeleteIcon from '@material-ui/icons/Delete';
 
@@ -131,7 +129,7 @@ class OrderPositionSuppComponent extends Component {
                 <div component={Paper} style={{width:"100%", textB: 'white'}}>
 
 
-                    <Autocomplete id="dodatek" options={this.state.dodatki} name='dodatek' value={this.state.dodatek} 
+                    <Autocomplete id={"dodatek"+this.state.id} options={this.state.dodatki} name='dodatek' value={this.state.dodatek} 
                         getOptionLabel={option => (option.nazwa+'')}
                         onChange={(event, value) => this.onChange('dodatek',value)} style={{  display:'inline'}} margin= 'dense' 
 
@@ -152,21 +150,6 @@ class OrderPositionSuppComponent extends Component {
         )
         }
 }
-const pomiarStyle={
-    width: '100%', 
-    paddingTop: '10px',
-   // border: '2px solid grey',  
-    //borderRadius: '10px', 
-    marginBottom:'20px'
-}
-
-const iconStyle={
-    clear: "both",
-    transform: "scale(6)", 
-    margin: "60px",
-    float: 'left'
-}
-
 const flexStyle={
     display: "flex",
     flexDirection: "row", 

@@ -40,7 +40,8 @@ class EditOrderComponent extends Component {
                     newActive:false,
                     newPosActive:false,
                     orderPositions: [], 
-                    headerState: 'auto'
+                    headerState: 'auto',
+                    supply: [],
                 }
             }
             else{
@@ -59,7 +60,8 @@ class EditOrderComponent extends Component {
                     newActive:false,
                     newPosActive:false,
                     orderPositions: [],
-                    headerState: 'auto'
+                    headerState: 'auto',
+                    supply: [],
                 }
             }
         this.props.title(this.state.title);  
@@ -205,14 +207,6 @@ class EditOrderComponent extends Component {
 
         )
         }
-}
-const pomiarStyle={
-    width: '100%', 
-    paddingTop: '10px',
-   // border: '2px solid grey',  
-    //borderRadius: '10px', 
-    marginBottom:'20px',
-    pointerEvents: 'none'
 }
 const posStyle={
     width: '100%',
