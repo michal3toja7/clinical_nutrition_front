@@ -12,7 +12,16 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
 
+const flexStyle={
+    display: "flex",
+    flexDirection: "row", 
+    //alignItems: "streth", 
+    flexWrap: "wrap",
+    justifyContent: 'space-between',
+    marginBottom: '30px'
+}
 
 class ListOrderComponent extends Component {
 
@@ -22,6 +31,8 @@ class ListOrderComponent extends Component {
             initialOrders: [],
             orders: [],
             title: 'Zamówienia',
+            typ:'',
+            status: '',
             page: 0,
             rowsPerPage: 7,
         }
@@ -47,8 +58,16 @@ class ListOrderComponent extends Component {
 
     reloadOrderList() {
         OrderService.fetchOrders()
-            .then(result => this.setState({initialOrders: result.data,
-                                           orders: result.data}));
+            .then(result => {this.setState({initialOrders: result.data
+                .filter((data) => JSON.stringify(data.josRealizujacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos"))) 
+                || JSON.stringify(data.josZamawiajacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos")))),
+                                           orders: result.data
+                .filter((data) => JSON.stringify(data.josRealizujacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos"))) 
+                || JSON.stringify(data.josZamawiajacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos")))),
+                                            })
+  
+                                        });
+
     }
 
     editOrder(order) {
@@ -60,19 +79,49 @@ class ListOrderComponent extends Component {
     search= (searchString) => {
         const search = searchString.target.value;
         this.setState({orders: this.state.initialOrders
-        .filter((data) => data.josRealizujacy.nazwa.toLowerCase().includes(search.toLowerCase()) 
-        || (data.pacjent.imiona+'').toLowerCase().includes(search.toLowerCase())
+        .filter((data) => (data.pacjent.imiona+'').toLowerCase().includes(search.toLowerCase())
         || (''+data.pacjent.nazwisko).toLowerCase().includes(search.toLowerCase())
         || (data.josZamawiajacy.nazwa+'').toLowerCase().includes(search.toLowerCase()) 
-        || (data.typ+'').toLowerCase().includes(search.toLowerCase()) 
         )})
+    }
+
+    searchSelect= (searchString) => {
+        const search = searchString.target.value;
+        const field = searchString.target.name;
+        console.log(search)
+        console.log(field)
+        this.setState({orders: this.state.initialOrders
+        .filter((data) => data[field].toLowerCase().includes(search.toLowerCase())),
+            [field]: search
+        })
     }
 
     render() {
         return (
             <div>
-                <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
-                width="25%" type="text" className="input" placeholder="Szukaj..." onChange={this.search}/>
+                <div style={flexStyle}>
+                <TextField style={{width: '25%'}} variant="standard" autoFocus 
+                type="text" label="Szukaj..." onChange={this.search}/>
+                
+                <TextField variant="standard" autoFocus select style={{width: '25%'}}  label="Typ żywienia" 
+                            name="typ" value={this.state.typ} onChange={this.searchSelect} >
+                                <MenuItem value={"DOU"}>Żywienie Doustne</MenuItem>
+                                <MenuItem value={"DOJ"}>Żywienie Dojelitowe</MenuItem>
+                                <MenuItem value={"WOR"}>Zlecenie na worek RTU</MenuItem>
+                </TextField>
+
+                <TextField variant="standard" select style={{width: '25%'}} label="Status zamówienia" 
+                            name="status" value={this.state.status} onChange={this.searchSelect}>
+                                <MenuItem value={"ZAP"}>Zapisane</MenuItem>
+                                <MenuItem value={"WYS"}>Wysłane</MenuItem>
+                                <MenuItem value={"REA"}>Realizowane</MenuItem>
+                                <MenuItem value={"ZRE"}>Zrealizowane</MenuItem>
+                                <MenuItem value={"ANU"}>Anulowane</MenuItem>
+                </TextField>  
+                </div>
+
+
+
                     <TableContainer component={Paper}>
                         <Table aria-label="custom pagination table">
                             <TableHead >
@@ -84,6 +133,7 @@ class ListOrderComponent extends Component {
                                     <TableCell align="right">Data Zamówienia</TableCell>
                                     <TableCell align="right">Data Zapotrzebowania</TableCell>
                                     <TableCell align="right">Typ</TableCell>
+                                    <TableCell align="right">Status</TableCell>
                                     <TableCell align="right">Edytuj</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -99,6 +149,7 @@ class ListOrderComponent extends Component {
                                         <TableCell align="right">{new Date(row.dataZlecenia).toLocaleDateString('pl-PL')}</TableCell>
                                         <TableCell align="right">{new Date(row.dataNa).toLocaleDateString('pl-PL')}</TableCell>
                                         <TableCell align="right">{row.typ ==='DOJ'  ? 'Dojelitowe' : (row.typ === 'WOR'? 'Worek RTU' : 'Doustne')}</TableCell>
+                                        <TableCell align="right">{row.status}</TableCell>
                                         <TableCell align="right" onClick={() => this.editOrder(row)}><CreateIcon /></TableCell>
                                     </TableRow>
                                 ))}

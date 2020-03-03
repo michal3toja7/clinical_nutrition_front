@@ -153,7 +153,7 @@ class EditOrderComponent extends Component {
                     <div style={{width: '48%', marginLeft:'2%'}}>
                     {this.state.orderPositions.length > 0 && 
                         <div style={posStyle}>
-                            <TableIngredientsRtuComponent supply={this.state.supply} zamowienieId={this.state.id} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                            <TableIngredientsRtuComponent supply={this.state.supply} zamowienieId={this.state.id} pomiar= {this.state.pomiar} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
                         </div>
                     }
                     </div>
@@ -162,7 +162,9 @@ class EditOrderComponent extends Component {
 
                     <hr/>
                     <div >
+                        {this.state.status!=='' &&
                             <TableHelpComponent pacjent={this.state.pacjent} pomiar={this.state.pomiar} />
+                        }    
                         </div>
                     <hr/>
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP' || this.state.orderPositions[0] !== undefined} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj worek</Button>

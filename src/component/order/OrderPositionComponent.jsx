@@ -145,18 +145,18 @@ class OrderPosition extends Component {
                     <TextField variant="outlined" autoFocus type="number"  required style={{width: '50%'}}
                         label="Co ile Godzin (h)" margin="dense" name="coIleH" value={this.state.coIleH} onChange={this.onChange} />
 
-                    <TextField variant="outlined" autoFocus type="number"  required style={{width: '50%'}}
-                        label="Ilość podań na dobę" disabled margin="dense" name="ilePodan" value={Math.round(24/this.state.coIleH,0)} onChange={this.onChange} />   
+                    <TextField variant="outlined" autoFocus type="number"  style={{width: '50%'}}
+                        label="Ilość podań na dobę" margin="dense" name="ilePodan" value={Math.round(24/this.state.coIleH,0)}/>   
 
-                    <TextField variant="outlined" disabled autoFocus type="number"  required style={{width: '50%'}}
-                        label="Ilość ml na dobę" margin="dense" name="iloscMl" value={this.state.objetosc * Math.round(24/this.state.coIleH,0)} onChange={this.onChange} />
+                    <TextField variant="outlined" autoFocus type="number"  style={{width: '50%'}}
+                        label="Ilość ml na dobę" margin="dense" name="iloscMl" value={this.state.objetosc * Math.round(24/this.state.coIleH,0)}/>
                     {this.props.typ === 'DOJ' && (
                         <div>
-                            <TextField variant="outlined" autoFocus type="text" style={{width: '50%'}}
+                            <TextField variant="outlined" autoFocus type="number" style={{width: '50%'}}
                                 label="Czas wlewu (h)" margin="dense" name="czasWlewu" value={this.state.czasWlewu} onChange={this.onChange} /> 
 
-                            <TextField variant="outlined" autoFocus type="text"  disabled style={{width: '50%'}}
-                                label="Szybkość przetaczania ml/h" margin="dense" name="uwagi" value={this.state.objetosc/this.state.czasWlewu} onChange={this.onChange} /> 
+                            <TextField variant="outlined" autoFocus type="number"  style={{width: '50%'}}
+                                label="Szybkość przetaczania ml/h" margin="dense" name="uwagi" value={Math.round(100*this.state.objetosc/this.state.czasWlewu)/100} /> 
 
                             <TextField variant="outlined" autoFocus select style={{width: '100%'}} label="Sposób podania" margin="dense"
                                     name="sposobPodania" value={this.state.sposobPodania} onChange={this.onChange} >

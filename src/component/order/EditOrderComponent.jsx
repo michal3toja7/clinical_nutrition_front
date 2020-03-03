@@ -193,8 +193,11 @@ class EditOrderComponent extends Component {
 
                     <hr/>
                     <div >
+                        {this.state.status!=='' &&
                             <TableHelpComponent pacjent={this.state.pacjent} pomiar={this.state.pomiar} />
+                        }
                         </div>
+                        
                     <hr/>
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
                     <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>

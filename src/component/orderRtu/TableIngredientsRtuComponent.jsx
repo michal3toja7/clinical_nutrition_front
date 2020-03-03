@@ -7,47 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableContainer from '@material-ui/core/TableContainer';
 
-const header=[    {nazwa: 'Aminokwasy (g)'},
-{nazwa: 'Azot (g)'},
-{nazwa: 'Glukoza (g)'},
-{nazwa: 'Lipidy (g)'},
-{nazwa: 'Energia Całkowita (kcal)'},
-{nazwa: 'Energia Pozabiałkowa (kcal)'},]
- const zawartosc=[
-    {nazwa: 'Aminokwasy (g)'},
-    {nazwa: 'Azot (g)'},
-    {nazwa: 'Glukoza (g)'},
-    {nazwa: 'Lipidy (g)'},
-    {nazwa: 'Energia Całkowita (kcal)'},
-    {nazwa: 'Energia Pozabiałkowa (kcal)'},
- ]
 
- const elektrolity=[
-    {nazwa: 'Na (mmol)'},
-    {nazwa: 'K (mmol)'},
-    {nazwa: 'Cl (mmol)'},
-    {nazwa: 'Mg (mmol)'},
-    {nazwa: 'Ca (mmol)'},
-    {nazwa: 'P (mmol)'},
-    {nazwa: 'Fe (mmol)'},
-    {nazwa: 'Zn (mmol)'},
- ]
-
- const podazDoba=[
-    {nazwa: 'Podaż na dobę'},
-    {nazwa: 'Aminokwasy g/kg/doba'},
-    {nazwa: 'Glukoza g/kg/doba'},
-    {nazwa: 'Lipidy g/kg/doba'},
-    {nazwa: 'Sód mmol/kg/doba'},
-    {nazwa: 'Potas mmol/kg/doba'},
-    {nazwa: 'Chlor mmol/kg/doba'},
-    {nazwa: 'Magnez mmol/kg/doba'},
-    {nazwa: 'Wapń mmol/kg/doba'},
-    {nazwa: 'Fosfor mmol/kg/doba'},
-    {nazwa: 'Żelazo mmol/kg/doba'},
-    {nazwa: 'Cynk mmol/kg/doba'},
-    {nazwa: 'Płyny ml/doba'},
- ]
 
 class TableIngredientsComponent extends Component {
     _isMounted = false;
@@ -57,7 +17,9 @@ class TableIngredientsComponent extends Component {
             this.state = {
               prevProps: [],
               supply: [],
-              table: JSON.parse(JSON.stringify(header)),
+              podazDoba: [],
+              elektrolity: [],
+              zawartosc: [],
               mCa: 40.078,
               mCl: 35.453,
               mFe: 55.485,
@@ -89,15 +51,36 @@ class TableIngredientsComponent extends Component {
           let suma=0
           this.props.supply.map(row => {
             suma+= row.ilosc*row.dodatek[nazwa]
-            console.log(nazwa + ': ' +row.dodatek[nazwa])
           })
           return suma
       }
 
+      sumTabble(tmpTable){
+        tmpTable.map(row =>{
+            let suma=0
+                Object.keys(row).map(col =>
+                isNaN(row[col])? '': suma= suma+ row[col]
+                )
+            row['Suma']=suma
+            })
+        tmpTable[0].Suma='Suma'
+        return tmpTable
+      }
+      getSupplySum(){
+        let suma=this.props.orderPos[0].worekPreparat.objetosc
+        this.props.supply.map(row => {
+          suma+= row.ilosc
+         
+        })
+        return suma
+
+      }
+
       buildTable(){
-            let tmpWorek=this.props.orderPos[0].worekPreparat
-           // const ileMl= (row.objetosc * Math.round(24/row.coIleH,0))/100
+        const waga= this.props.pomiar.waga
+        let tmpWorek=this.props.orderPos[0].worekPreparat
            let zawartosc=[
+                {nazwa: 'Zawartość:', worek: 'Worek', dodatki: 'Dodatki'},
                 {nazwa: 'Aminokwasy (g)', worek: tmpWorek.aa, dodatki: this.getSupplyData('aminokwasy')},
                 {nazwa: 'Azot (g)', worek: tmpWorek.azot, dodatki: (this.getSupplyData('aminokwasy')/6.25)},
                 {nazwa: 'Glukoza (g)', worek: tmpWorek.weglowodany, dodatki: this.getSupplyData('glukoza')},
@@ -106,81 +89,86 @@ class TableIngredientsComponent extends Component {
                                                                                     + (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*9))},
                 {nazwa: 'Energia Pozabiałkowa (kcal)', worek: tmpWorek.wartoscEnergetycznaPozabialkowa, dodatki: (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*10)},
            ]
-           //this.getSupplyData('potas')
+           zawartosc = this.sumTabble(zawartosc)
 
 
-           const elektrolity=[
-            {nazwa: 'Na (mmol)', worek: tmpWorek.sod},
-            {nazwa: 'K (mmol)', worek: tmpWorek.potas},
-            {nazwa: 'Mg (mmol)', worek: tmpWorek.magnez},
-            {nazwa: 'Ca (mmol)', worek: tmpWorek.wapn},
-            {nazwa: 'P (mmol)', worek: tmpWorek.fosforany},
+           let elektrolity=[
+            {nazwa: 'Elektrolity:', worek: 'Worek', dodatki: 'Dodatki'},
+            {nazwa: 'Na (mmol)', worek: tmpWorek.sod, dodatki: this.getSupplyData('sod')},
+            {nazwa: 'K (mmol)', worek: tmpWorek.potas, dodatki: this.getSupplyData('potas')},
+            {nazwa: 'Mg (mmol)', worek: tmpWorek.magnez, dodatki: this.getSupplyData('magnez')},
+            {nazwa: 'Ca (mmol)', worek: tmpWorek.wapn, dodatki: this.getSupplyData('wapn')},
+            {nazwa: 'P (mmol)', worek: tmpWorek.fosforany, dodatki: this.getSupplyData('fosfor')},
          ]
-           console.log(this.props)
+            elektrolity = this.sumTabble(elektrolity)
 
-           /*
-            tmpTable[0]['Preparat'+count]=row.preparat.bialko*ileMl                              // Aminokwasy (g)
-            tmpTable[1]['Preparat'+count]=(row.preparat.bialko*ileMl)/6.25                       // Azot (g)
-            tmpTable[2]['Preparat'+count]=row.preparat.weglowodany*ileMl                         // Glukoza (g)
-            tmpTable[3]['Preparat'+count]=row.preparat.tluszcz*ileMl                             // Lipidy (g)
-            tmpTable[4]['Preparat'+count]=row.preparat.blonnik*ileMl                             // Błonnik (g)
-            tmpTable[5]['Preparat'+count]=row.preparat.wartoscEnergetyczna*ileMl*100             // Energia Całk (kcal)
-      
-
-   
-
-          tmpTable.map(row =>{
-            let suma=0
-                Object.keys(row).map(col =>
-                isNaN(row[col])? '': suma= suma+ row[col]
-                )
-            row['Suma']=suma
-            })
-*/
- //         if((JSON.stringify(this.state.table) !== JSON.stringify(tmpTable))){
-              
+           let podazDoba=[
+            {nazwa: 'Podaż na dobę', wynik: 'Na dobę:'},
+            {nazwa: 'Aminokwasy g/kg/doba', wynik: zawartosc[1].Suma/waga},
+            {nazwa: 'Glukoza g/kg/doba', wynik: zawartosc[3].Suma/waga},
+            {nazwa: 'Lipidy g/kg/doba', wynik: zawartosc[4].Suma/waga},
+            {nazwa: 'Sód mmol/kg/doba', wynik: elektrolity[1].Suma/waga},
+            {nazwa: 'Potas mmol/kg/doba', wynik: elektrolity[2].Suma/waga},
+            {nazwa: 'Magnez mmol/kg/doba', wynik: elektrolity[3].Suma/waga},
+            {nazwa: 'Wapń mmol/kg/doba', wynik: elektrolity[4].Suma/waga},
+            {nazwa: 'Fosfor mmol/kg/doba', wynik: elektrolity[5].Suma/waga},
+            {nazwa: 'Płyny ml/doba', wynik: this.getSupplySum()/waga},
+         ]
+     
                 this.setState({
-                    table: zawartosc,
+                    podazDoba: podazDoba,
+                    elektrolity:elektrolity,
+                    zawartosc:zawartosc,
                     prevProps: this.props,
                })
-     //    }
+
       }
 
 
 
       
 
-
-
+        renderTable(table){
+            if (table[0]===undefined)
+                return false
+            return(
+                <TableContainer component={Paper}>
+                    <Table size='small'>
+                        <TableHead>
+                            <TableRow>
+                                {Object.keys(table[0]).map(col =>(
+                                    <TableCell><b>{table[0][col]}</b></TableCell>
+                                ))}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {table.slice(1).map((row,index) => (
+                            <TableRow hover key={row.nazwa+index}>
+                                {Object.keys(row).map(col =>(
+                                    <TableCell>{isNaN(row[col]) || row[col]===''? row[col] : Math.round(100*row[col])/100}</TableCell>
+                                ))}
+                            </TableRow> 
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer> 
+            )
+        }
 
 
     render() {
         let suma=0
         return (
             <div style={flexStyle}>
-                        <TableContainer component={Paper}>
-                        <Table size='small'>
-                            <TableHead>
-                                <TableRow>
-                                    {Object.keys(this.state.table[0]).map(col =>(
-                                        <TableCell><b>{col==='nazwa'? 'Składniki/doba':col}</b></TableCell>
-                                    ))}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                            {this.state.table.map((row,index) => (
-                                <TableRow hover key={row.nazwa+index}>
-                                    {Object.keys(row).map(col =>(
-                                        <TableCell>{isNaN(row[col]) || row[col]===''? row[col] : Math.round(100*row[col])/100}</TableCell>
-                                    ))}
-                                </TableRow> 
-                            ))}
-                                    </TableBody>
-                                    </Table>
-                                    </TableContainer>   
-
-
-
+                <div style={{width: '100%', marginBottom: '40px'}}>
+                    {this.renderTable(this.state.zawartosc)}
+                </div>
+                <div style={{width: '100%', marginBottom: '40px'}}>
+                    {this.renderTable(this.state.elektrolity)}
+                </div>
+                <div style={{width: '100%', marginBottom: '40px'}}>
+                    {this.renderTable(this.state.podazDoba)}
+                </div>
             </div>                        
 
         )
