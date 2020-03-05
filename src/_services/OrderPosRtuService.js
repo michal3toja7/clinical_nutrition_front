@@ -3,7 +3,7 @@ import API_URL from './Globals'
 import authHeader  from '../_helpers/authHeader';
 import handleResponse  from '../_helpers/handleResponse';
 
-const ORDER_POS_API_BASE_URL = (API_URL+'/zamowienie/pozycjeRTU');
+const ORDER_POS_API_BASE_URL = (API_URL+'/user/zamowienie/pozycjeRTU');
 
 class OrderPosRtuService {
  

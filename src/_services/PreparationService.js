@@ -3,7 +3,7 @@ import API_URL from './Globals'
 import authHeader  from '../_helpers/authHeader';
 import handleResponse  from '../_helpers/handleResponse';
 
-const PREPARATION_API_BASE_URL = (API_URL+'/preparat');
+const PREPARATION_API_BASE_URL = (API_URL+'/user/preparat');
 
 class PreparationService {
  

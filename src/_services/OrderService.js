@@ -3,7 +3,7 @@ import API_URL from './Globals'
 import authHeader  from '../_helpers/authHeader';
 import handleResponse  from '../_helpers/handleResponse';
 
-const ORDER_API_BASE_URL = (API_URL+'/zamowienie');
+const ORDER_API_BASE_URL = (API_URL+'/user/zamowienie');
 
 class OrderService {
  

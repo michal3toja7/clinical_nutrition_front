@@ -3,7 +3,7 @@ import API_URL from './Globals'
 import authHeader  from '../_helpers/authHeader';
 import handleResponse  from '../_helpers/handleResponse';
 
-const PATIENT_API_BASE_URL = (API_URL+'/pacjent');
+const PATIENT_API_BASE_URL = (API_URL+'/user/pacjent');
 
 class PatientService {
  
