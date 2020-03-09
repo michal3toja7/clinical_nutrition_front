@@ -12,6 +12,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class ListJosComponent extends Component {
@@ -19,6 +21,8 @@ class ListJosComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialjoss: [],
             joss: [],
             title: 'Jednostki organizacyjne',
@@ -48,17 +52,24 @@ class ListJosComponent extends Component {
 
     reloadJosList() {
         josService.fetchJoss()
-            .then(result => this.setState({initialjoss: result.data,
-                                           joss: result.data}));
+            .then(result => { 
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({initialjoss: result.data,
+                                    joss: result.data,
+                                    isLoading: false,
+                            })
+                        }
+                    });
     }
 
     editJos(id) {
-        window.localStorage.setItem("josId", id);
+        window.sessionStorage.setItem("josId", id);
         this.props.history.push('/admin/edit-jos');
     }
 
     addJos() {
-        window.localStorage.removeItem("josId");
+        window.sessionStorage.removeItem("josId");
         this.props.history.push('/admin/add-jos');
     }
 
@@ -71,6 +82,17 @@ class ListJosComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
@@ -126,6 +148,7 @@ class ListJosComponent extends Component {
                     <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addJos()}> Dodaj Jednostkę Organizacyjną</Button>
                 </div>
             );
+        }
         }
 }
 

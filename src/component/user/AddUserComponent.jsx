@@ -7,12 +7,16 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class AddUserComponent extends Component{
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: false,
             title: 'Dodawanie Użytkownika',
             username: '',
             password: '',
@@ -52,9 +56,12 @@ class AddUserComponent extends Component{
                     zablokowany: "false"//this.state.zablokowany, 
                     };
         UserService.addUser(user)
-            .then(res => {
-                this.setState({message : 'Użytkownik dodany prawidłowo.'});
-                this.props.history.push('/admin/users');
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({message : 'Użytkownik dodany prawidłowo.'});
+                    this.props.history.push('/admin/users');
+                }
             });
     }
 
@@ -82,7 +89,18 @@ class AddUserComponent extends Component{
             },
           };
 
-        return(
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
+        return (
             <div>
                 <form style={formContainer} component={Paper}>
                    <Typography variant="h6" fullwidth align="left">Dane konta:</Typography>                      
@@ -136,6 +154,7 @@ class AddUserComponent extends Component{
             </form>
     </div>
         );
+    }
     }
 }
 const formContainer = {

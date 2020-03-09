@@ -10,6 +10,8 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { wait } from '@testing-library/react';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 
@@ -20,6 +22,8 @@ class OrderPosRtuitionRtuComponent extends Component {
         super(props)
         if(props.orderPosRtu!== undefined && props.orderPosRtu!== null ){
             this.state = {
+                error:null,
+                isLoading: true,
                 saveIsActive: false,
                 worki: [],
                 dodatki: [],
@@ -34,6 +38,8 @@ class OrderPosRtuitionRtuComponent extends Component {
         }
         else{
             this.state = {
+                error:null,
+                isLoading: false,
                 saveIsActive: true,
                 worki: [],
                 dodatki: [],
@@ -52,12 +58,17 @@ class OrderPosRtuitionRtuComponent extends Component {
     
     componentDidMount() {
         this._isMounted = true;
-        this.reloadOrderSupp();
-        PreparationBagService.fetchPreparationBags()
-        .then((result) =>{if(this._isMounted){
-             this.setState({
-             worki: result.data})
-             }})
+        if(this._isMounted){
+            this.reloadOrderSupp();
+            PreparationBagService.fetchPreparationBags()
+            .then((result) =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({
+                    worki: result.data,
+                    isLoading: false})
+                }})
+        }
     }
 
     componentWillMount() {
@@ -91,16 +102,24 @@ class OrderPosRtuitionRtuComponent extends Component {
             }
 
             OrderPosRtuService.addOrderPosRtu(orderPosRtu)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pozycję zedytowany z sukcesem.',
-                               saveIsActive: false});
+                               saveIsActive: false,
+                               isLoading: false});
                 this.props.updateList();
+                }
             });
     }
 
         async deleteAllSupply(dodatek){
             await OrderPosSuppService.deleteorderPosSupp(dodatek.id)
-            .then(res => wait(100))
+            .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                wait(100)
+                }})
         }
 
         deleteOrderPosRtu = (e) =>{
@@ -111,8 +130,11 @@ class OrderPosRtuitionRtuComponent extends Component {
                         this.deleteAllSupply(this.state.dodatki[dodatek])
                     }
                     OrderPosRtuService.deleteOrderPosRtu(this.state.id)
-                    .then(res => {
+                    .then(result => {
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                        else{
                         this.props.updateList();
+                        }
                     });
                 }
         }
@@ -121,14 +143,17 @@ class OrderPosRtuitionRtuComponent extends Component {
             if(this.state.id!==''){
                 OrderPosSuppService.fetchorderPosSupps(this.state.id)
                     .then(result =>{
-                        if(result.data[0]!==undefined){
-                        this.setState({dodatki: result.data.sort((a,b) => a.dodatek.nazwa.localeCompare(b.dodatek.nazwa)),
-                                     newActive:false})
-                        this.props.getSupply(result.data)}
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
                         else{
-                        this.setState({dodatki: result.data,
+                            if(result.data[0]!==undefined){
+                            this.setState({dodatki: result.data.sort((a,b) => a.dodatek.nazwa.localeCompare(b.dodatek.nazwa)),
                                         newActive:false})
-                        }     
+                            this.props.getSupply(result.data)}
+                            else{
+                            this.setState({dodatki: result.data,
+                                            newActive:false})
+                            }     
+                        }
                 });
             }
         }
@@ -144,6 +169,17 @@ class OrderPosRtuitionRtuComponent extends Component {
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", textB: 'white'}}>
@@ -212,6 +248,7 @@ class OrderPosRtuitionRtuComponent extends Component {
             </div>                        
 
         )
+        }
         }
 }
 

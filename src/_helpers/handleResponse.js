@@ -1,7 +1,10 @@
-import signInService from '../_services/SignInService';
 
 export default function handleResponse(error) {
     if (error.response.status === 401) {
-        signInService.logout();
+        return {error: "401"}
+    }
+
+    if (error.response.status === 403) {
+        return {error: "403"}
     }
 }

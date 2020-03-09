@@ -9,13 +9,17 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class AddPatientComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: false,
             title: 'Dodawanie Pacjenta',
             nazwisko: '',
             imiona: '',
@@ -84,9 +88,12 @@ class AddPatientComponent extends Component {
             czyZyje: this.state.czyZyje,
             };
         PatientService.addPatient(patient)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pacjent dodany z sukcesem.'});
                 this.props.history.push('/patients');
+                }
             });
     }
 
@@ -106,6 +113,17 @@ class AddPatientComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -162,6 +180,7 @@ class AddPatientComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 const formContainer = {

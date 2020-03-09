@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class ListUserComponent extends Component {
@@ -20,6 +22,8 @@ class ListUserComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialUsers: [],
             users: [],
             title: 'Użytkownicy',
@@ -50,21 +54,27 @@ class ListUserComponent extends Component {
 
     reloadUserList() {
         UserService.fetchUsers()
-            .then(result => this.setState({initialUsers: result.data,
-                                           users: result.data}));
+            .then(result =>{
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                this.setState({initialUsers: result.data,
+                                           users: result.data,
+                                           isLoading: false})
+                }
+            });
     }
 
     editUser(id) {
-        window.localStorage.setItem("userId", id);
+        window.sessionStorage.setItem("userId", id);
         this.props.history.push('/admin/edit-user');
     }
     editPremissions(id) {
-        window.localStorage.setItem("userId", id);
+        window.sessionStorage.setItem("userId", id);
         this.props.history.push('/admin/premissions');
     }
 
     addUser() {
-        window.localStorage.removeItem("userId");
+        window.sessionStorage.removeItem("userId");
         this.props.history.push('/admin/add-user');
     }
 
@@ -77,6 +87,17 @@ class ListUserComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
@@ -136,6 +157,7 @@ class ListUserComponent extends Component {
                     <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addUser()}> Dodaj Użytkownika</Button>
                 </div>
             );
+        }
         }
 }
 

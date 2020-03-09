@@ -9,13 +9,17 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
 import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class EditPatientComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: true,
             title: 'Edycja Pacjenta',
             id:'',
             nazwisko: '',
@@ -50,8 +54,10 @@ class EditPatientComponent extends Component {
     }
 
     loadPatient() {
-        PatientService.fetchPatientById(window.localStorage.getItem("patientId"))
+        PatientService.fetchPatientById(window.sessionStorage.getItem("patientId"))
             .then((result) => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 let patient = result.data;
                 this.setState({
                     id: patient.id,
@@ -66,7 +72,9 @@ class EditPatientComponent extends Component {
                     nrDomu: patient.adresZamieszkania.nrDomu,
                     nrMieszkania: patient.adresZamieszkania.nrMieszkania,
                     czyZyje: patient.czyZyje,
+                    isLoading: false
                 })
+            }
             });
 
             
@@ -100,9 +108,12 @@ class EditPatientComponent extends Component {
             czyZyje: this.state.czyZyje,
             };
         PatientService.editPatient(patient)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pacjent Zedytowany z sukcesem.'});
                 this.props.history.push('/patients');
+                }
             });
     }
 
@@ -122,6 +133,17 @@ class EditPatientComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -178,6 +200,7 @@ class EditPatientComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 const formContainer = {

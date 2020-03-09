@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 
@@ -17,6 +19,8 @@ class OrderPosition extends Component {
         super(props)
         if(props.orderPos!== undefined && props.orderPos!== null ){
             this.state = {
+                error:null,
+                isLoading: true,
                 saveIsActive: false,
                 preparaty: [],
                 id: this.props.orderPos.id,
@@ -32,6 +36,8 @@ class OrderPosition extends Component {
         }
         else{
             this.state = {
+                error:null,
+                isLoading: true,
                 saveIsActive: true,
                 preparaty: [],
                 id:'',
@@ -54,11 +60,18 @@ class OrderPosition extends Component {
     
     componentDidMount() {
         this._isMounted = true;
+        if(this._isMounted){
         PreparationService.fetchPreparations()
-        .then((result) =>{if(this._isMounted){
-             this.setState({
-             preparaty: result.data.filter((data) => data.typ.toLowerCase().includes(this.props.typ.toLowerCase())), })
-             }})
+        .then((result) =>{			
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                this.setState({
+                preparaty: result.data.filter((data) => data.typ.toLowerCase().includes(this.props.typ.toLowerCase())),
+                isLoading: false 
+                })
+             }
+            })
+        }
     }
 
     componentWillMount() {
@@ -97,10 +110,14 @@ class OrderPosition extends Component {
             }
 
             OrderPosService.addOrderPos(orderPos)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pozycję zedytowany z sukcesem.',
-                               saveIsActive: false});
+                               saveIsActive: false,
+                               isLoading: false});
                 this.props.updateList();
+                }
             });
     }
 
@@ -109,8 +126,11 @@ class OrderPosition extends Component {
                 if(this.state.id ===''){this.props.updateList();}
                 else{            
                     OrderPosService.deleteOrderPos(this.state.id)
-                    .then(res => {
+                    .then(result => {
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                        else{
                         this.props.updateList();
+                        }
                     });
                 }
         }
@@ -126,6 +146,17 @@ class OrderPosition extends Component {
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", textB: 'white'}}>
@@ -182,6 +213,7 @@ class OrderPosition extends Component {
             </div>                        
 
         )
+        }
         }
 }
 const flexStyle={

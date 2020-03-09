@@ -7,12 +7,16 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class EditUserComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: true,
             title: 'Edycja Użytkownika',
             id:'',
             username: '',
@@ -45,21 +49,25 @@ class EditUserComponent extends Component {
     }
 
     loadUser() {
-        UserService.fetchUserById(window.localStorage.getItem("userId"))
+        UserService.fetchUserById(window.sessionStorage.getItem("userId"))
             .then((result) => {
-                let user = result.data;
-                this.setState({
-                id: user.id,
-                username: user.username,
-                password: user.password,
-                imiona: user.imiona,
-                nazwisko: user.nazwisko,
-                pesel: user.pesel,
-                rodzaj_personelu: user.rodzaj_personelu,
-                stanowisko: user.stanowisko,
-                administrator: user.administrator,
-                zablokowany: user.zablokowany,
-                })
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    let user = result.data;
+                    this.setState({
+                    id: user.id,
+                    username: user.username,
+                    password: user.password,
+                    imiona: user.imiona,
+                    nazwisko: user.nazwisko,
+                    pesel: user.pesel,
+                    rodzaj_personelu: user.rodzaj_personelu,
+                    stanowisko: user.stanowisko,
+                    administrator: user.administrator,
+                    zablokowany: user.zablokowany,
+                    isLoading: false
+                    })
+                }
             });
 
             
@@ -89,9 +97,12 @@ class EditUserComponent extends Component {
             zablokowany: this.state.zablokowany,
             };
         UserService.editUser(user)
-            .then(res => {
-                this.setState({message : 'User added successfully.'});
-                this.props.history.push('/admin/users');
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({message : 'User added successfully.', isLoading: false});
+                    this.props.history.push('/admin/users');
+                }
             });
     }
 
@@ -111,6 +122,17 @@ class EditUserComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -166,6 +188,7 @@ class EditUserComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 const formContainer = {

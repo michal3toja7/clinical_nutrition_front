@@ -7,12 +7,16 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class AddPreparationComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: false,
             title: 'Edycja Preparatu',
             id:'',
             nazwa: '',
@@ -84,9 +88,12 @@ class AddPreparationComponent extends Component {
             czyAktywny: this.state.czyAktywny
             };
         PreparationService.addPreparation(preparation)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Preparat dodany z sukcesem.'});
                 this.props.history.push('/preparations');
+                }
             });
     }
 
@@ -106,6 +113,17 @@ class AddPreparationComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -184,6 +202,7 @@ class AddPreparationComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 

@@ -7,7 +7,8 @@ import TableIngredientsComponent from './TableIngredientsComponent';
 import TableSupplyComponent from './TableSupplyComponent';
 import OrderHeaderComponent from './OrderHeaderComponent';
 import TableHelpComponent from './TableHelpComponent';
-
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 
@@ -20,9 +21,11 @@ class EditOrderComponent extends Component {
 
     constructor(props) {
         super(props)
-            if(localStorage.getItem("currentOrder")!== 'null' && localStorage.getItem("currentOrder")!==undefined ){
-                let tmporder=JSON.parse(localStorage.getItem("currentOrder"))
+            if(sessionStorage.getItem("currentOrder")!== 'null' && sessionStorage.getItem("currentOrder")!==undefined ){
+                let tmporder=JSON.parse(sessionStorage.getItem("currentOrder"))
                 this.state = {
+                    error:null,
+                    isLoading: true,
                     order: tmporder,
                     id: tmporder.id,
                     patients: [],
@@ -42,14 +45,17 @@ class EditOrderComponent extends Component {
                     orderPositions: [], 
                     headerState: 'auto',
                     supply: [],
+                    isJosRealizujacy: JSON.stringify(tmporder.josRealizujacy)=== JSON.parse(JSON.stringify(sessionStorage.getItem("currentJos")))
                 }
             }
             else{
                 this.state = {
+                    error:null,
+                    isLoading: false,
                     id: '',
                     pacjent: [],
                     pomiar: [],
-                    josZamawiajacy: JSON.parse(localStorage.getItem("currentJos")),
+                    josZamawiajacy: JSON.parse(sessionStorage.getItem("currentJos")),
                     josRealizujacy: [],
                     dataNa: new Date(),
                     dataZlecenia: new Date(),
@@ -62,6 +68,7 @@ class EditOrderComponent extends Component {
                     orderPositions: [],
                     headerState: 'auto',
                     supply: [],
+                    isJosRealizujacy: false
                 }
             }
         this.props.title(this.state.title);  
@@ -77,7 +84,7 @@ class EditOrderComponent extends Component {
 
     changeToEditOrderRtu(){
         if(this.state.typ==='WOR'){
-            window.localStorage.setItem("currentOrderRTU",JSON.stringify(this.state))
+            window.sessionStorage.setItem("currentOrderRTU",JSON.stringify(this.state))
             this.props.history.replace('/edit-orderRtu');
         }
     }
@@ -133,20 +140,39 @@ class EditOrderComponent extends Component {
         if(this.state.id!==''){
             OrderPosService.fetchOrderPoss(this.state.id)
                 .then(result =>{
-                    if(result.data[0]!==undefined){
-                    this.setState({orderPositions: result.data,
-                                newPosActive:false,
-                                headerState:'none'})}
+                    if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
                     else{
-                    this.setState({orderPositions: result.data,
-                        headerState:'auto'})
-                    }     
+                        if(result.data[0]!==undefined){
+                        this.setState({orderPositions: result.data,
+                                    newPosActive:false,
+                                    isLoading: false,
+                                    headerState:'none'})}
+                        else{
+                        this.setState({orderPositions: result.data,
+                            isLoading: false,
+                            headerState:'auto'})
+                        }  
+                    }   
             });
         }
+    }
+    changeStatus(status){
+        this.orderHeaderComponent.current.saveOrder(status);
     }
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", marginTop: '-20px'}}>
@@ -199,16 +225,38 @@ class EditOrderComponent extends Component {
                         </div>
                         
                     <hr/>
-                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
-                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addStudy()}>Wyślij</Button>
-                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="secondary" onClick={this.deleteOrder}>Usuń Zamówienie</Button>                    
-                    <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>
-                </div>
+                    {this.state.isJosRealizujacy && (
+                        <div>
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'WYS'} variant="contained" color="primary" onClick={() => this.changeStatus('REA')}>Przyjmij zamówienie</Button>
+                            
+                            <Button style={{width:'23%', margin:'1%', display: this.state.status === 'ZRE' ? "inline": "none" }} variant="contained" color="primary" onClick={() => this.changeStatus('REA')}>Wycofaj realizację</Button>
+
+                            <Button style={{width:'23%', margin:'1%', display: this.state.status !== 'ZRE' ? "inline": "none" }}
+                                disabled={this.state.status !== 'REA'} variant="contained" color="primary" onClick={() => this.changeStatus('ZRE')}>Zakończ realizację</Button>
+
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status === 'ZRE'} variant="contained" color="secondary" onClick={() => this.changeStatus('ANU')}>Anuluj zamówienie</Button>
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.deleteOrder}>Drukuj</Button>                    
+                        </div>
+                    )}
+                    {!this.state.isJosRealizujacy && (
+                        <div>
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.addOrderPos()}>Dodaj preparat</Button>
+                            <Button style={{width:'23%', margin:'1%', display: this.state.status === '' || this.state.status === 'ZAP'  ? "inline": "none" }} 
+                                disabled={this.state.status !== 'ZAP'} variant="contained" color="primary" onClick={() => this.changeStatus('WYS')}>Wyślij</Button>
+                            <Button style={{width:'23%', margin:'1%', display: this.state.status !== '' && this.state.status !== 'ZAP'  ? "inline": "none"}}
+                                disabled={this.state.status !== 'WYS'} variant="contained" color="primary" onClick={() => this.changeStatus('ZAP')}>Wycofaj</Button>
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="secondary" onClick={this.deleteOrder}>Usuń Zamówienie</Button>                    
+                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>
+                        </div>
+                    )}
+                
+                    </div>
 
 
             </div>                        
 
         )
+        }
         }
 }
 const posStyle={

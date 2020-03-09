@@ -7,13 +7,17 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class EditPreparationComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: true,
             title: 'Edycja Preparatu',
             id:'',
             nazwa: '',
@@ -55,30 +59,34 @@ class EditPreparationComponent extends Component {
     }
 
     loadPreparation() {
-        PreparationService.fetchPreparationById(window.localStorage.getItem("preparationId"))
+        PreparationService.fetchPreparationById(window.sessionStorage.getItem("preparationId"))
             .then((result) => {
-                let preparation = result.data;
-                this.setState({
-                    id: preparation.id,
-                    nazwa: preparation.nazwa,
-                    typ: preparation.typ,
-                    opis: preparation.opis,
-                    wartoscEnergetyczna: preparation.wartoscEnergetyczna,
-                    bialko: preparation.bialko,
-                    weglowodany: preparation.weglowodany,
-                    tluszcz: preparation.tluszcz,
-                    blonnik: preparation.blonnik,
-                    osmolarnosc: preparation.osmolarnosc,
-                    sod: preparation.sod,
-                    potas: preparation.potas,
-                    chlor: preparation.chlor,
-                    wapn: preparation.wapn,
-                    magnez: preparation.magnez,
-                    fosfor: preparation.fosfor,
-                    zelazo: preparation.zelazo,
-                    cynk: preparation.cynk,
-                    czyAktywny: preparation.czyAktywny
-                })
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    let preparation = result.data;
+                    this.setState({
+                        id: preparation.id,
+                        nazwa: preparation.nazwa,
+                        typ: preparation.typ,
+                        opis: preparation.opis,
+                        wartoscEnergetyczna: preparation.wartoscEnergetyczna,
+                        bialko: preparation.bialko,
+                        weglowodany: preparation.weglowodany,
+                        tluszcz: preparation.tluszcz,
+                        blonnik: preparation.blonnik,
+                        osmolarnosc: preparation.osmolarnosc,
+                        sod: preparation.sod,
+                        potas: preparation.potas,
+                        chlor: preparation.chlor,
+                        wapn: preparation.wapn,
+                        magnez: preparation.magnez,
+                        fosfor: preparation.fosfor,
+                        zelazo: preparation.zelazo,
+                        cynk: preparation.cynk,
+                        czyAktywny: preparation.czyAktywny,
+                        isLoading: false
+                    })
+                }
             });
 
             
@@ -117,9 +125,12 @@ class EditPreparationComponent extends Component {
             czyAktywny: this.state.czyAktywny
             };
         PreparationService.editPreparation(preparation)
-            .then(res => {
-                this.setState({message : 'Preparat aedytowany z sukcesem.'});
-                this.props.history.push('/preparations');
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({message : 'Preparat aedytowany z sukcesem.', isLoading: false});
+                    this.props.history.push('/preparations');
+                }
             });
     }
 
@@ -139,6 +150,17 @@ class EditPreparationComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -217,6 +239,7 @@ class EditPreparationComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 

@@ -11,6 +11,12 @@ class OrderService {
         return axios.get(ORDER_API_BASE_URL,{headers: authHeader()})
         .catch(handleResponse);
     }
+    fetchOrdersByJos(jos) {
+        if(jos===null || jos === undefined)
+            return false
+        return axios.post(ORDER_API_BASE_URL+'/jos', jos,{headers: authHeader()})
+        .catch(handleResponse);
+    }
 
     fetchOrderById(orderId) {
         return axios.get(ORDER_API_BASE_URL + '/' + orderId,{headers: authHeader()})

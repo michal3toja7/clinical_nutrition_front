@@ -5,6 +5,8 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import StudyService from '../../_services/StudyService';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class StudyComponent extends Component {
@@ -12,7 +14,9 @@ class StudyComponent extends Component {
     constructor(props){
         super(props);
         if(props.pomiar!== undefined && props.pomiar!== null ){
-            this.state ={
+            this.state = {
+                error:null,
+                isLoading: false,
                 saveIsActive: false,
                 id: props.pomiar.id,
                 idPacjenta: props.pomiar.idPacjenta,
@@ -25,7 +29,9 @@ class StudyComponent extends Component {
                 message: null,
             }
         } else{
-            this.state ={
+            this.state = {
+                error:null,
+                isLoading: false,
                 id: '',
                 saveIsActive: true,
                 idPacjenta: props.idPacjenta,
@@ -69,10 +75,13 @@ class StudyComponent extends Component {
             }
 
             StudyService.addStudy(study)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pomiar zedytowany z sukcesem.',
                                saveIsActive: false});
                 this.props.updateList();
+                }
             });
     }
 
@@ -81,10 +90,13 @@ class StudyComponent extends Component {
                 if(this.state.id ===''){}
                 else{            
                     StudyService.deleteStudy(this.state.id)
-                    .then(res => {
+                    .then(result => {
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                        else{
                         this.setState({message : 'Pomiar usunięto z sukcesem.',
                                     saveIsActive: false});
                         this.props.updateList();
+                        }
                     });
                 }
         }
@@ -114,7 +126,18 @@ class StudyComponent extends Component {
                     saveIsActive: true })};
 
 render(){
-    return(
+    if(this.state.error!== null  || this.state.isLoading){
+        return(
+            <div>
+                {(this.state.isLoading
+                ? <LoadingComponent/>
+                : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                )}
+            </div>
+        );
+    }
+    else{
+    return (
         <div style={flexStyle}>
             <MuiPickersUtilsProvider utils={DateFnsUtils} >
                     <DateTimePicker
@@ -162,6 +185,7 @@ render(){
 
 
     );
+    }
 }
 }
 const flexStyle={

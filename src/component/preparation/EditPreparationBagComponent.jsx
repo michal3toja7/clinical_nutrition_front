@@ -6,13 +6,17 @@ import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class EditPreparationBagComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: true,
             title: 'Edycja Worka',
             id: '',
             producent: '',	//Producent
@@ -69,8 +73,10 @@ class EditPreparationBagComponent extends Component {
     }
 
     loadPreparationBag() {
-        PreparationBagService.fetchPreparationBagById(window.localStorage.getItem("preparationBagId"))
+        PreparationBagService.fetchPreparationBagById(window.sessionStorage.getItem("preparationBagId"))
             .then((result) => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 let preparationBag = result.data;
                 this.setState({
                     id: preparationBag.id,
@@ -107,7 +113,9 @@ class EditPreparationBagComponent extends Component {
                     sodPotasMax: preparationBag.sodPotasMax,	
                     intralipid: preparationBag.intralipid,	
                     czyAktywny: preparationBag.czyAktywny,
+                    isLoading: false
                 })
+            }
             });
 
             
@@ -161,9 +169,12 @@ class EditPreparationBagComponent extends Component {
             czyAktywny: this.state.czyAktywny,
             };
         PreparationBagService.editPreparationBag(preparationBag)
-            .then(res => {
-                this.setState({message : 'Worek zedytowany z sukcesem.'});
-                this.props.history.push('/preparationBags');
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({message : 'Worek zedytowany z sukcesem.',isLoading: false});
+                    this.props.history.push('/preparationBags');
+                }
             });
     }
 
@@ -183,6 +194,17 @@ class EditPreparationBagComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -304,6 +326,7 @@ class EditPreparationBagComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 

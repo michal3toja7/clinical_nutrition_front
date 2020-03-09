@@ -6,6 +6,9 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
+
 
 const resetTimeout = (id, newID) => {	
 	clearTimeout(id)
@@ -19,6 +22,8 @@ class OrderPositionSuppComponent extends Component {
         super(props)
         if(props.orderPosSupp!== undefined && props.orderPosSupp!== null ){
             this.state = {
+                error:null,
+                isLoading: false,
                 saveIsActive: false,
                 dodatki: [],
                 id: this.props.orderPosSupp.id,
@@ -30,6 +35,8 @@ class OrderPositionSuppComponent extends Component {
         }
         else{
             this.state = {
+                error:null,
+                isLoading: false,
                 saveIsActive: true,
                 dodatki: [],
                 id: '',
@@ -48,11 +55,16 @@ class OrderPositionSuppComponent extends Component {
     
     componentDidMount() {
         this._isMounted = true;
-        SupplementService.fetchSupplements()
-        .then((result) =>{if(this._isMounted){
-             this.setState({
-             dodatki: result.data})
-             }})
+        if(this._isMounted){
+            SupplementService.fetchSupplements()
+            .then((result) =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({
+                    dodatki: result.data,
+                    isLoading: false})
+                }})
+        }
     }
 
     componentWillMount() {
@@ -83,10 +95,14 @@ class OrderPositionSuppComponent extends Component {
             }
 
             OrderPosSuppService.addorderPosSupp(orderPosSupp)
-            .then(res => {
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 this.setState({message : 'Pozycję zedytowany z sukcesem.',
-                               saveIsActive: false});
+                               saveIsActive: false,
+                               isLoading: false});
                 this.props.updateList();
+                }
             });
    
         }
@@ -96,8 +112,11 @@ class OrderPositionSuppComponent extends Component {
                 if(this.state.id ===''){this.props.updateList();}
                 else{            
                     OrderPosSuppService.deleteorderPosSupp(this.state.id)
-                    .then(res => {
-                        this.props.updateList();
+                    .then(result => {
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                        else{
+                            this.props.updateList();
+                        }
                     });
                 }
         }
@@ -124,6 +143,17 @@ class OrderPositionSuppComponent extends Component {
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", textB: 'white'}}>
@@ -148,6 +178,7 @@ class OrderPositionSuppComponent extends Component {
             </div>                        
 
         )
+        }
         }
 }
 const flexStyle={

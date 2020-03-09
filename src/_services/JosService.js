@@ -11,6 +11,10 @@ class JosService {
         return axios.get(JOS_API_BASE_URL,{headers: authHeader()})
         .catch(handleResponse);
     }
+    fetchJossByPremission() {
+        return axios.get(JOS_API_BASE_URL+"/premission",{headers: authHeader()})
+        .catch(handleResponse);
+    }
 
     fetchJosById(josId) {
         return axios.get(JOS_API_BASE_URL + '/' + josId,{headers: authHeader()})

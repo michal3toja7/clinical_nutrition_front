@@ -6,6 +6,8 @@ import { Typography } from '@material-ui/core';
 import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 
@@ -14,7 +16,9 @@ class ListStudyComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            idPacjenta: window.localStorage.getItem("patientId"),
+            error:null,
+            isLoading: true,
+            idPacjenta: window.sessionStorage.getItem("patientId"),
             initialPatients: [],
             studys: [],
             patient: {},
@@ -31,7 +35,12 @@ class ListStudyComponent extends Component {
     componentDidMount() {
         this.reloadStudyList();
         PatientService.fetchPatientById(this.state.idPacjenta)
-        .then((result) => this.setState({patient: result.data}));
+        .then((result) => {
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                this.setState({patient: result.data, isLoading: false})
+            }
+        });
     }
 
     updateList(){
@@ -40,8 +49,13 @@ class ListStudyComponent extends Component {
 
     reloadStudyList() {
         StudyService.fetchStudys(this.state.idPacjenta)
-            .then(result =>{ this.setState({studys: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)}),
-                                            newActive:false})     
+            .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({studys: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)}),
+                                            newActive:false,
+                                            isLoading: false})
+                }     
         });
     }
 
@@ -52,6 +66,17 @@ class ListStudyComponent extends Component {
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", marginTop: '-30px'}}>
@@ -78,6 +103,7 @@ class ListStudyComponent extends Component {
             </div>                        
 
         )
+        }
         }
 }
 

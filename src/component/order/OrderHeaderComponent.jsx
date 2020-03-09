@@ -11,6 +11,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import StudyComponent from '../patient/StudyComponent';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import OrderService from '../../_services/OrderService';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 
@@ -22,6 +24,8 @@ class OrderHeaderComponent extends Component {
         super(props)
             if(props.order!== null && props.order!==undefined ){
                 this.state = {
+                    error:null,
+                    isLoading: true,
                     order: props.order,
                     id: props.order.id,
                     patients: [],
@@ -44,13 +48,15 @@ class OrderHeaderComponent extends Component {
             }
             else{
                 this.state = {
+                    error:null,
+                    isLoading: false,
                     order: props.order,
                     id: '',
                     josyRealizujace: [],
                     patients: [],
                     pacjent: [],
                     pomiar: [{id:'',idPacjenta:'', waga: '', wzrost: '', temperatura:'', aktywnosc:'', stanChorego: ''}],
-                    josZamawiajacy: JSON.parse(localStorage.getItem("currentJos")),
+                    josZamawiajacy: JSON.parse(sessionStorage.getItem("currentJos")),
                     josRealizujacy: [],
                     dataNa: new Date(),
                     dataZlecenia: new Date(),
@@ -85,20 +91,27 @@ class OrderHeaderComponent extends Component {
     async load(){
         let joss;
         let patients;
-            
+        if(this._isMounted){
+
         await PatientService.fetchPatients()
             .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 patients= result.data
-                
+                }
             })
 
         await JosService.fetchJoss()
             .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 joss=result.data  
+                }
             })
-        if(this._isMounted){
+        
             this.setState({patients: patients,
-                            josyRealizujace: joss})
+                            josyRealizujace: joss, 
+                            isLoading: false})
         }
     }
 
@@ -115,11 +128,15 @@ class OrderHeaderComponent extends Component {
     updateStudy(){
         StudyService.fetchStudys(this.state.pacjent.id)
         .then(result =>{
-            if(result.data[0]!== undefined){
-            this.setState({pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
-                                        newActive:false})     
-            } else{
-                this.setState({newActive:true})
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                if(result.data[0]!== undefined){
+                this.setState({pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
+                                            newActive:false,
+                                            isLoading: false})     
+                } else{
+                    this.setState({newActive:true,isLoading: false})
+                }
             }
     });
     }
@@ -127,14 +144,19 @@ class OrderHeaderComponent extends Component {
     changePatient(choosePatient){
         StudyService.fetchStudys(choosePatient.id)
         .then(result =>{
-            if(result.data[0]!== undefined){
-            this.setState({ pacjent: choosePatient,
-                            pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
-                            newActive:false})     
-            } else{
-                this.setState({pacjent: choosePatient,
-                               pomiar: [],
-                               newActive:true})
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                if(result.data[0]!== undefined){
+                this.setState({ pacjent: choosePatient,
+                                pomiar: result.data.sort((a, b) => {return new Date(b.dataPomiaru) - new Date(a.dataPomiaru)})[0],
+                                newActive:false,
+                                isLoading: false})     
+                } else{
+                    this.setState({pacjent: choosePatient,
+                                pomiar: [],
+                                newActive:true,
+                                isLoading: false})
+                }
             }
     });
     }
@@ -142,7 +164,9 @@ class OrderHeaderComponent extends Component {
 
 
 
-    saveOrder = (e) => {
+    saveOrder = (status) => {
+        if(status === null || status === undefined)
+            status='ZAP'
 
         let zamowienie={
                     id: this.state.id,
@@ -154,39 +178,58 @@ class OrderHeaderComponent extends Component {
                     dataZlecenia: this.state.dataZlecenia,
                     rozpoznanie: this.state.rozpoznanie,
                     typ: this.state.typ,
-                    status: 'ZAP'
+                    status: status
         }
         OrderService.addOrder(zamowienie)
         .then(result => {
-            console.log(result.data)
-            this.props.updateOrder(result.data);
-            window.localStorage.setItem("currentOrder", JSON.stringify(result.data));
-            this.setState({
-                order: result.data.order,
-                id: result.data.id,
-                pacjent: result.data.pacjent,
-                pomiar: result.data.pomiar,
-                josZamawiajacy: result.data.josZamawiajacy,
-                josRealizujacy: result.data.josRealizujacy,
-                dataNa: result.data.dataNa,
-                dataZlecenia: result.data.dataZlecenia,
-                rozpoznanie: result.data.rozpoznanie,
-                typ: result.data.typ,
-                status: result.data.status
-            })
+            if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+            else{
+                this.props.updateOrder(result.data);
+                window.sessionStorage.setItem("currentOrder", JSON.stringify(result.data));
+                this.setState({
+                    order: result.data.order,
+                    id: result.data.id,
+                    pacjent: result.data.pacjent,
+                    pomiar: result.data.pomiar,
+                    josZamawiajacy: result.data.josZamawiajacy,
+                    josRealizujacy: result.data.josRealizujacy,
+                    dataNa: result.data.dataNa,
+                    dataZlecenia: result.data.dataZlecenia,
+                    rozpoznanie: result.data.rozpoznanie,
+                    typ: result.data.typ,
+                    status: result.data.status, 
+                    isLoading: false
+                })
+        }
         })
     }
     deleteOrder = (e) => {
             if(this.state.id ===''){this.props.history.goBack()}
             else{            
                 OrderService.deleteOrder(this.state.id)
-                .then(res => {  this.props.history.goBack()});
+                .then(result => {  
+                    if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                    else{
+                        this.props.history.goBack()
+                    }
+                });
             }
     }
     
 
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
                 <div>
                 <Typography variant="h4" style={{marginLeft: '25%',width:'50%', display: 'inline-block'}}  align="center">Nagłówek zamówienia</Typography>  
@@ -280,6 +323,7 @@ class OrderHeaderComponent extends Component {
 
         )
         }
+    }
 }
 const pomiarStyle={
     width: '100%', 

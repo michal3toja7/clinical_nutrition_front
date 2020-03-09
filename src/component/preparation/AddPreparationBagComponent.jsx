@@ -6,13 +6,17 @@ import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class AddPreparationBagComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: false,
             title: 'Edycja Worka',
             id: '',
             producent: '',	//Producent
@@ -114,9 +118,12 @@ class AddPreparationBagComponent extends Component {
             czyAktywny: this.state.czyAktywny,
             };
         PreparationBagService.editPreparationBag(preparationBag)
-            .then(res => {
-                this.setState({message : 'Worek dodany z sukcesem.'});
-                this.props.history.push('/preparationBags');
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({message : 'Worek dodany z sukcesem.'});
+                    this.props.history.push('/preparationBags');
+                }
             });
     }
 
@@ -136,6 +143,17 @@ class AddPreparationBagComponent extends Component {
                 marginRight: "100%"
             },
           };
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -257,6 +275,7 @@ class AddPreparationBagComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 

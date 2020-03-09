@@ -7,12 +7,16 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class AddJosComponent extends Component {
 
     constructor(props){
         super(props);
-        this.state ={
+        this.state = {
+            error:null,
+            isLoading: false,
             title: 'Dodawanie Jednostki',
             id:'',
             kod: '',
@@ -69,8 +73,11 @@ class AddJosComponent extends Component {
             };
         JosService.addJos(jos)
             .then(res => {
+                if(res.error !== undefined){ this.setState({error: res.error, isLoading: false})}
+                else{
                 this.setState({message : 'Jos dodany z powodzeniem.'});
                 this.props.history.push('/admin/jos');
+                }
             });
     }
 
@@ -90,6 +97,18 @@ class AddJosComponent extends Component {
                 marginRight: "100%"
             },
           };
+
+          if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -147,6 +166,7 @@ class AddJosComponent extends Component {
             </form>
     </div>
         );
+    }
     }
 }
 const formContainer = {

@@ -7,6 +7,8 @@ import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class EditJosComponent extends Component {
 
@@ -14,6 +16,8 @@ class EditJosComponent extends Component {
         super(props);
         this.state ={
             title: 'Edytuj Jednostkę',
+            error:null,
+            isLoading: true,
             id:'',
             kod: '',
             nazwa: '',
@@ -46,8 +50,10 @@ class EditJosComponent extends Component {
     }
 
     loadJos() {
-        JosService.fetchJosById(window.localStorage.getItem("josId"))
+        JosService.fetchJosById(window.sessionStorage.getItem("josId"))
             .then((result) => {
+				if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
                 let jos = result.data;
                 this.setState({
                     id: jos.id,
@@ -62,7 +68,9 @@ class EditJosComponent extends Component {
                     adresKodPocztowy: jos.adresKodPocztowy,
                     email: jos.email,
                     telefon: jos.telefon,
+					isLoading: false,
                 })
+				}
             });
 
             
@@ -95,9 +103,11 @@ class EditJosComponent extends Component {
             };
         JosService.editJos(jos)
             .then(res => {
-                this.setState({message : 'Jos zedytowany z powodzeniem.'});
+                if(res.error !== undefined){ this.setState({error: res.error, isLoading: false})}
+                else{
+                this.setState({message : 'Jos zedytowany z powodzeniem.', isLoading: false});
                 this.props.history.push('/admin/jos');
-            });
+            }});
     }
 
     render() {
@@ -116,6 +126,17 @@ class EditJosComponent extends Component {
                 marginRight: "100%"
             },
           };
+		if(this.state.error!== null  || this.state.isLoading){
+		return(
+			<div>
+				{(this.state.isLoading
+				? <LoadingComponent/>
+				: <ErrorComponent error={this.state.error} history={this.props.history}/>
+				)}
+			</div>
+		);
+        }
+        else{
         return (
             <div>
                 <form style={formContainer} component={Paper}>
@@ -174,6 +195,7 @@ class EditJosComponent extends Component {
     </div>
         );
     }
+	}
 }
 const formContainer = {
     //  display: '',

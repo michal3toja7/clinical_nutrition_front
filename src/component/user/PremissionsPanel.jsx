@@ -15,6 +15,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Typography } from '@material-ui/core';
 import AssignmentIndRoundedIcon from '@material-ui/icons/AssignmentIndRounded';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class PremissionsPanel extends Component {
@@ -22,6 +24,8 @@ class PremissionsPanel extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             joss: [],
             premissionsDef: [],
             premissions: [],
@@ -49,15 +53,29 @@ class PremissionsPanel extends Component {
     }
 
     async reloadAll() {
-       await userService.fetchUserById(window.localStorage.getItem("userId"))
-            .then((result) => this.setState({user: result.data,
-                                             userId: result.data.id}));
+       await userService.fetchUserById(window.sessionStorage.getItem("userId"))
+            .then((result) =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                this.setState({user: result.data,
+                                userId: result.data.id,
+                                isLoading: false})
+                }
+        });
         josService.fetchJoss()
-            .then(result => this.setState({joss: result.data}));
+            .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{ this.setState({joss: result.data, isLoading: false})}});
+                
         premissionsService.fetchPremissionssDef()
-            .then(result => this.setState({premissionsDef: result.data}));
-        premissionsService.fetchPremissionss(window.localStorage.getItem("userId"))
-            .then(result =>{ this.setState({premissions: result.data})                    
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{ this.setState({premissionsDef: result.data, isLoading: false})}});
+
+        premissionsService.fetchPremissionss(window.sessionStorage.getItem("userId"))
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{ this.setState({premissions: result.data, isLoading: false})}                    
             })
         }
 
@@ -94,8 +112,11 @@ class PremissionsPanel extends Component {
                 czyAktywny: value,
             }
            await premissionsService.addPremissions(premission)
-                .then(res => {
-                    this.setState({message : 'Uprawnienie dodane z sukcesem.'});
+                .then(result => {
+                    if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                    else{
+                        this.setState({message : 'Uprawnienie dodane z sukcesem.'});
+                    }
                 });
         }
       this.reloadAll();
@@ -109,6 +130,17 @@ class PremissionsPanel extends Component {
     }
     
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div style={flexStyle}>
                 <div component={Paper} style={{width:"100%", marginTop: '-30px'}}>
@@ -190,6 +222,7 @@ class PremissionsPanel extends Component {
                 </div>
             );
         }
+    }
 }
 
 const flexStyle={

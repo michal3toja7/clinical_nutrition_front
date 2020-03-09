@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 const flexStyle={
     display: "flex",
@@ -28,6 +30,8 @@ class ListOrderComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialOrders: [],
             orders: [],
             title: 'Zamówienia',
@@ -57,21 +61,22 @@ class ListOrderComponent extends Component {
     }
 
     reloadOrderList() {
-        OrderService.fetchOrders()
-            .then(result => {this.setState({initialOrders: result.data
-                .filter((data) => JSON.stringify(data.josRealizujacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos"))) 
-                || JSON.stringify(data.josZamawiajacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos")))),
-                                           orders: result.data
-                .filter((data) => JSON.stringify(data.josRealizujacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos"))) 
-                || JSON.stringify(data.josZamawiajacy)=== JSON.parse(JSON.stringify(localStorage.getItem("currentJos")))),
-                                            })
+        OrderService.fetchOrdersByJos(JSON.parse(sessionStorage.getItem("currentJos")))
+            .then(result => {
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({initialOrders: result.data,
+                    orders: result.data,
+                    isLoading: false,
+                                                })
+                    }
   
                                         });
 
     }
 
     editOrder(order) {
-        window.localStorage.setItem("currentOrder", JSON.stringify(order));
+        window.sessionStorage.setItem("currentOrder", JSON.stringify(order));
         this.props.history.push('/edit-order');
     }
 
@@ -97,6 +102,17 @@ class ListOrderComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <div style={flexStyle}>
@@ -179,6 +195,7 @@ class ListOrderComponent extends Component {
                     <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.editOrder(null)}> Dodaj Zamówienie</Button>
                 </div>
             );
+        }
         }
 }
 

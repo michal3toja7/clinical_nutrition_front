@@ -13,6 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class ListPatientComponent extends Component {
@@ -20,6 +22,8 @@ class ListPatientComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialPatients: [],
             patients: [],
             title: 'Pacjenci',
@@ -51,21 +55,27 @@ class ListPatientComponent extends Component {
 
     reloadPatientList() {
         PatientService.fetchPatients()
-            .then(result => this.setState({initialPatients: result.data,
-                                           patients: result.data}));
+            .then(result =>	{ 
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{ 
+                    this.setState({initialPatients: result.data,
+                                           patients: result.data,
+                                           isLoading: false})
+                    }
+                });
     }
 
     editPatient(id) {
-        window.localStorage.setItem("patientId", id);
+        window.sessionStorage.setItem("patientId", id);
         this.props.history.push('/edit-patient');
     }
     studyPatient(id) {
-        window.localStorage.setItem("patientId", id);
+        window.sessionStorage.setItem("patientId", id);
         this.props.history.push('/patient/study');
     }
 
     addPatient() {
-        window.localStorage.removeItem("patientId");
+        window.sessionStorage.removeItem("patientId");
         this.props.history.push('/add-patient');
     }
 
@@ -78,6 +88,17 @@ class ListPatientComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
@@ -141,6 +162,7 @@ class ListPatientComponent extends Component {
                     <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addPatient()}> Dodaj Pacjenta</Button>
                 </div>
             );
+        }
         }
 }
 

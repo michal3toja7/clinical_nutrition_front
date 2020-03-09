@@ -12,13 +12,16 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
-
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 class ListPreparationBagComponent extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialPreparationBags: [],
             preparationBags: [],
             title: 'Worki Żywieniowe',
@@ -46,19 +49,25 @@ class ListPreparationBagComponent extends Component {
         this.reloadPreparationBagList();
     }
 
-    reloadPreparationBagList() {
-        PreparationBagService.fetchPreparationBags()
-            .then(result => this.setState({initialPreparationBags: result.data,
-                                           preparationBags: result.data}));
+    async reloadPreparationBagList() {
+        await PreparationBagService.fetchPreparationBags()
+            .then(result =>{ 
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                this.setState({initialPreparationBags: result.data,
+                                preparationBags: result.data,
+                                isLoading: false
+                            })}
+                });
     }
 
     editPreparationBag(id) {
-        window.localStorage.setItem("preparationBagId", id);
+        window.sessionStorage.setItem("preparationBagId", id);
         this.props.history.push('/edit-preparationBag');
     }
 
     addPreparationBag() {
-        window.localStorage.removeItem("preparationBagId");
+        window.sessionStorage.removeItem("preparationBagId");
         this.props.history.push('/add-preparationBag');
     }
 
@@ -72,9 +81,20 @@ class ListPreparationBagComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
-                <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
+        <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
                 width="25%" type="text" className="input" placeholder="Szukaj..." onChange={this.search}/>
                     <TableContainer component={Paper}>
                         <Table aria-label="custom pagination table">
@@ -128,6 +148,7 @@ class ListPreparationBagComponent extends Component {
                 </div>
             );
         }
+    }
 }
 
 export default ListPreparationBagComponent;

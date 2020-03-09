@@ -12,6 +12,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import TextField from '@material-ui/core/TextField';
+import ErrorComponent from '../../_helpers/ErrorComponent'
+import LoadingComponent from '../../_helpers/LoadingComponent'
 
 
 class ListPreparationComponent extends Component {
@@ -19,6 +21,8 @@ class ListPreparationComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            error:null,
+            isLoading: true,
             initialPreparations: [],
             preparations: [],
             title: 'Preparaty',
@@ -48,17 +52,23 @@ class ListPreparationComponent extends Component {
 
     reloadPreparationList() {
         PreparationService.fetchPreparations()
-            .then(result => this.setState({initialPreparations: result.data,
-                                           preparations: result.data}));
+            .then(result =>{
+                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                else{
+                    this.setState({initialPreparations: result.data,
+                                           preparations: result.data,
+                                           isLoading: false})
+                    }
+                });
     }
 
     editPreparation(id) {
-        window.localStorage.setItem("preparationId", id);
+        window.sessionStorage.setItem("preparationId", id);
         this.props.history.push('/edit-preparation');
     }
 
     addPreparation() {
-        window.localStorage.removeItem("preparationId");
+        window.sessionStorage.removeItem("preparationId");
         this.props.history.push('/add-preparation');
     }
 
@@ -71,6 +81,17 @@ class ListPreparationComponent extends Component {
     }
 
     render() {
+        if(this.state.error!== null  || this.state.isLoading){
+            return(
+                <div>
+                    {(this.state.isLoading
+                    ? <LoadingComponent/>
+                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                    )}
+                </div>
+            );
+        }
+        else{
         return (
             <div>
                 <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
@@ -126,6 +147,7 @@ class ListPreparationComponent extends Component {
                     <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addPreparation()}> Dodaj Preparat</Button>
                 </div>
             );
+        }
         }
 }
 

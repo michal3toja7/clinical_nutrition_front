@@ -20,7 +20,7 @@ import EditPatientComponent from "./patient/EditPatientComponent";
 import AddPatientComponent from "./patient/AddPatientComponent";
 import SignIn from "./SignIn";
 import signInService from "../_services/SignInService";
-import UserMenu from "./UserMenu";
+import UserMenu from "./userMenu/UserMenu";
 import PremissionsPanel from "./user/PremissionsPanel";
 import ListStudyComponent from "./patient/ListStudyComponent";
 import EditOrderRtuComponent from "./orderRtu/EditOrderRtuComponent";
