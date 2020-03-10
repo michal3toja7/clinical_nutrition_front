@@ -73,8 +73,8 @@ class TableIngredientsComponent extends Component {
          
         })
         return suma
-
       }
+
 
       buildTable(){
         const waga= this.props.pomiar.waga
@@ -88,6 +88,7 @@ class TableIngredientsComponent extends Component {
                 {nazwa: 'Energia Całkowita (kcal)', worek: tmpWorek.wartoscEnergetycznaCalkowita, dodatki: ((this.getSupplyData('aminokwasy')*4)
                                                                                     + (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*9))},
                 {nazwa: 'Energia Pozabiałkowa (kcal)', worek: tmpWorek.wartoscEnergetycznaPozabialkowa, dodatki: (this.getSupplyData('glukoza')*3.4) +(this.getSupplyData('tluszcz')*10)},
+                {nazwa: 'Płyny (ml)', worek: tmpWorek.objetosc, dodatki: this.getSupplyData('glukoza')},
            ]
            zawartosc = this.sumTabble(zawartosc)
 
@@ -112,9 +113,11 @@ class TableIngredientsComponent extends Component {
             {nazwa: 'Magnez mmol/kg/doba', wynik: elektrolity[3].Suma/waga},
             {nazwa: 'Wapń mmol/kg/doba', wynik: elektrolity[4].Suma/waga},
             {nazwa: 'Fosfor mmol/kg/doba', wynik: elektrolity[5].Suma/waga},
-            {nazwa: 'Płyny ml/doba', wynik: this.getSupplySum()/waga},
+            {nazwa: 'Płyny ml/doba', wynik: this.getSupplySum()},
          ]
-     
+         
+            
+            this.props.getTableIngredients({podazDoba,elektrolity,zawartosc})
                 this.setState({
                     podazDoba: podazDoba,
                     elektrolity:elektrolity,
@@ -157,7 +160,6 @@ class TableIngredientsComponent extends Component {
 
 
     render() {
-        let suma=0
         return (
             <div style={flexStyle}>
                 <div style={{width: '100%', marginBottom: '40px'}}>

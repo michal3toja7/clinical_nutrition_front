@@ -8,13 +8,14 @@ import OrderHeaderComponent from '../order/OrderHeaderComponent';
 import TableHelpComponent from '../order/TableHelpComponent';
 import ErrorComponent from '../../_helpers/ErrorComponent'
 import LoadingComponent from '../../_helpers/LoadingComponent'
+import OrderPdf from '../pdfRTU/OrderPdf'
 
 
 
 
 
 
-
+let tableIngredients;
 
 class EditOrderComponent extends Component {
     _isMounted = false;
@@ -109,6 +110,17 @@ class EditOrderComponent extends Component {
         this.setState({supply: supply})
     }
 
+    getTableIngredients(argstableIngredients){
+        tableIngredients = argstableIngredients
+        // if(this.state.tableIngerients !== tableIngredients)
+         //   this.setState({tableIngredients: tableIngredients})
+        //console.log(tableIngredients)
+    }
+
+    print(){
+        this.setState({isPrintReady: true})
+    }
+
      reloadOrderPos() {
         if(this.state.id!==''){
             OrderPosRtuService.fetchOrderPosRtus(this.state.id)
@@ -175,7 +187,8 @@ class EditOrderComponent extends Component {
                     <div style={{width: '48%', marginLeft:'2%'}}>
                     {this.state.orderPositions.length > 0 && 
                         <div style={posStyle}>
-                            <TableIngredientsRtuComponent supply={this.state.supply} zamowienieId={this.state.id} pomiar= {this.state.pomiar} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                            <TableIngredientsRtuComponent getTableIngredients={(tableIngredients) => this.getTableIngredients(tableIngredients)} supply={this.state.supply} zamowienieId={this.state.id} 
+                                pomiar= {this.state.pomiar} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
                         </div>
                     }
                     </div>
@@ -201,7 +214,12 @@ class EditOrderComponent extends Component {
                                 disabled={this.state.status !== 'REA'} variant="contained" color="primary" onClick={() => this.changeStatus('ZRE')}>Zakończ realizację</Button>
 
                             <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status === 'ZRE'} variant="contained" color="secondary" onClick={() => this.changeStatus('ANU')}>Anuluj zamówienie</Button>
-                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.deleteOrder}>Drukuj</Button>                    
+                            <Button style={{width:'23%', margin:'1%', display: this.state.isPrintReady ? "none" : "inline"}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}> Drukuj</Button>      
+                            {this.state.isPrintReady&& (
+                              <Button style={{width:'23%', margin:'1%'}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}>
+                                <OrderPdf tableIngredients={tableIngredients} order={this.state.order} positions={this.state.orderPositions} supply= {this.state.supply}/>
+                              </Button>    
+                            )}
                         </div>
                     )}
                     {!this.state.isJosRealizujacy && (
@@ -214,6 +232,8 @@ class EditOrderComponent extends Component {
                             <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="secondary" onClick={this.deleteOrder}>Usuń Zamówienie</Button>                    
                             <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.saveOrder}>Zapisz nagłówek</Button>
                         </div>
+
+
                     )}
                 </div>
 

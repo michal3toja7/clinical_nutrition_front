@@ -9,13 +9,12 @@ import OrderHeaderComponent from './OrderHeaderComponent';
 import TableHelpComponent from './TableHelpComponent';
 import ErrorComponent from '../../_helpers/ErrorComponent'
 import LoadingComponent from '../../_helpers/LoadingComponent'
+import OrderPdf from '../pdf/OrderPdf'
 
 
 
 
-
-
-
+let tableIngredients;
 class EditOrderComponent extends Component {
     _isMounted = false;
 
@@ -45,7 +44,9 @@ class EditOrderComponent extends Component {
                     orderPositions: [], 
                     headerState: 'auto',
                     supply: [],
-                    isJosRealizujacy: JSON.stringify(tmporder.josRealizujacy)=== JSON.parse(JSON.stringify(sessionStorage.getItem("currentJos")))
+                    isJosRealizujacy: JSON.stringify(tmporder.josRealizujacy)=== JSON.parse(JSON.stringify(sessionStorage.getItem("currentJos"))),
+                    isPrintReady: false,
+                    tableIngerients: [],
                 }
             }
             else{
@@ -53,6 +54,7 @@ class EditOrderComponent extends Component {
                     error:null,
                     isLoading: false,
                     id: '',
+                    order:[],
                     pacjent: [],
                     pomiar: [],
                     josZamawiajacy: JSON.parse(sessionStorage.getItem("currentJos")),
@@ -68,7 +70,8 @@ class EditOrderComponent extends Component {
                     orderPositions: [],
                     headerState: 'auto',
                     supply: [],
-                    isJosRealizujacy: false
+                    isJosRealizujacy: false,
+                    tableIngredients: [],
                 }
             }
         this.props.title(this.state.title);  
@@ -133,6 +136,15 @@ class EditOrderComponent extends Component {
 
      updateOrderPoss(){
          this.reloadOrderPos();
+    }
+    getTableIngredients(argstableIngredients){
+        tableIngredients = argstableIngredients
+        // if(this.state.tableIngerients !== tableIngredients)
+         //   this.setState({tableIngredients: tableIngredients})
+        //console.log(tableIngredients)
+    }
+    print(){
+        this.setState({isPrintReady: true})
     }
 
 
@@ -202,7 +214,8 @@ class EditOrderComponent extends Component {
                     <div style={{width: '48%', marginLeft:'2%'}}>
                     {this.state.orderPositions.length > 0 && 
                         <div style={posStyle}>
-                            <TableIngredientsComponent key={this.state.orderPositions.length} zamowienieId={this.state.id} orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
+                            <TableIngredientsComponent key={this.state.orderPositions.length} getTableIngredients={(tableIngredients) => this.getTableIngredients(tableIngredients)} zamowienieId={this.state.id} 
+                            orderPos={this.state.orderPositions} typ={this.state.typ} updateList={() => this.updateOrderPoss()} />
                         </div>
                     }
                     </div>
@@ -235,7 +248,12 @@ class EditOrderComponent extends Component {
                                 disabled={this.state.status !== 'REA'} variant="contained" color="primary" onClick={() => this.changeStatus('ZRE')}>Zakończ realizację</Button>
 
                             <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status === 'ZRE'} variant="contained" color="secondary" onClick={() => this.changeStatus('ANU')}>Anuluj zamówienie</Button>
-                            <Button style={{width:'23%', margin:'1%'}} disabled={this.state.headerState==='none'} variant="contained" color="primary" onClick={this.deleteOrder}>Drukuj</Button>                    
+                            <Button style={{width:'23%', margin:'1%', display: this.state.isPrintReady ? "none" : "inline"}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}> Drukuj</Button>      
+                            {this.state.isPrintReady&& (
+                              <Button style={{width:'23%', margin:'1%'}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}>
+                                <OrderPdf tableIngredients={tableIngredients} order={this.state.order} positions={this.state.orderPositions} />
+                              </Button>    
+                            )}
                         </div>
                     )}
                     {!this.state.isJosRealizujacy && (
