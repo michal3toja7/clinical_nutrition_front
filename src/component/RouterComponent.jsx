@@ -57,7 +57,7 @@ class RouterComponent extends Component {
                 <Router ref={this.router}>
                         <Switch>
                             <Redirect from="/" exact to="/home"/>
-                            <Route title={'testowanko'} path="/login" exact 
+                            <Route path="/login" exact 
                             component={(props) => <SignIn {...props} title={(newTitle) => this.updateTitle(newTitle)}/>}
                             />
                             <SecretRoute path="/home" 

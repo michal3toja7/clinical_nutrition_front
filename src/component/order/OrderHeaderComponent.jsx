@@ -22,7 +22,7 @@ class OrderHeaderComponent extends Component {
 
     constructor(props) {
         super(props)
-            if(props.order!== null && props.order!==undefined ){
+            if(props.order.josZamawiajacy!== null && props.order.josZamawiajacy!==undefined ){
                 this.state = {
                     error:null,
                     isLoading: true,
@@ -219,6 +219,7 @@ class OrderHeaderComponent extends Component {
 
 
     render() {
+        console.log(this.state.josZamawiajacy)
         if(this.state.error!== null  || this.state.isLoading){
             return(
                 <div>
