@@ -41,6 +41,7 @@ class SignIn extends Component{
 
 
      authenticate= (e) => {
+      e.preventDefault()
       let user = {
         username: this.state.username,
         password: this.state.userPassword,
@@ -63,7 +64,7 @@ class SignIn extends Component{
         
         <Box borderRadius="50%">
         <div className={useStyles.paper}>
-          <form className={useStyles.form}>
+          <form className={useStyles.form} onSubmit = {this.authenticate}>
               <TextField 
               variant="outlined" 
               autoFocus 
@@ -95,7 +96,7 @@ class SignIn extends Component{
                 color="primary"
                 type="submit"
                 className={useStyles.submit}
-                onClick={this.authenticate}
+                //onClick={this.authenticate}
               >
               Zaloguj
             </Button>
