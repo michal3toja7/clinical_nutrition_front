@@ -1,9 +1,10 @@
 import signInService from '../_services/SignInService';
+import Cookies from 'js-cookie';
 
 export default function authHeader() {
-    const currentUser = signInService.currentUserValue;  
-    if (currentUser && currentUser.token) {
-        return { 'Authorization': `Bearer ${currentUser.token}` };
+    const token =  Cookies.get("token") ? Cookies.get("token") : null;
+    if (token) {
+        return { 'Authorization': `Bearer ${token}` };
     } else {
         return {};
     }

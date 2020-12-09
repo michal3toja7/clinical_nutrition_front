@@ -2,7 +2,7 @@ import axios from 'axios';
 import { BehaviorSubject } from 'rxjs';
 import API_URL from './Globals';
 import authHeader  from '../_helpers/authHeader';
-
+import Cookies from 'js-cookie';
 
 
 
@@ -21,25 +21,31 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(sessionStorage.getItem
 
    async function login(user) {
     return await axios.post(API_URL+'/authenticate', user)
-        .then(result => {sessionStorage.setItem('currentUser', JSON.stringify(result.data))
-         currentUserSubject.next(result.data)}) 
+        .then(result => {Cookies.set('token',result.data)
+            getCurrentUser()}) 
+    // await getCurrentUser()
     }
+
+
+
 
     async function refreshToken(jos) {
         if(jos===null || jos === undefined)
             return false
 
         return await axios.post(API_URL+'/user/refreshToken', jos,{headers: authHeader()})
+            .then(result => {Cookies.set('token',result.data)}) 
+        }
+
+    async function getCurrentUser() {
+        return await axios.post(API_URL+'/user/getCurrentUser','',{headers: authHeader()})
             .then(result => {sessionStorage.setItem('currentUser', JSON.stringify(result.data))
-             currentUserSubject.next(result.data)}) 
+                currentUserSubject.next(result.data)}) 
         }
     
     function isUserAuthenticated(){
-        if (signInService.currentUserValue && signInService.currentUserValue.token) {
-            return true;
-        }else{
-            return false;
-        }
+        return (signInService.currentUserValue && authHeader())
+            
 
     }
 
@@ -53,6 +59,7 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(sessionStorage.getItem
     function logout() {
             axios.post(API_URL+'/user/logout',{headers: authHeader()})
             sessionStorage.clear();
+            Cookies.remove("token");
             currentUserSubject.next(null);
             window.location.reload();
     }

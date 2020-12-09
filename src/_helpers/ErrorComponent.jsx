@@ -24,7 +24,9 @@ export default function ErrorComponent(props) {
       props.history.replace("/login")
     }
     else{
-        props.history.goBack()
+      props.history.goBack()
+        //props.history.goBack()
+
     }
   };
 

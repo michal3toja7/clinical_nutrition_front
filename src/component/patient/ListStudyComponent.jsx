@@ -88,14 +88,14 @@ class ListStudyComponent extends Component {
 
                 {this.state.newActive && (
                 <div style={{width: '100%',marginBottom:'20px'}}>
-                    <StudyComponent key='0' idPacjenta={this.state.idPacjenta} updateList={() => this.updateList()} />
+                    <StudyComponent key='0' history={this.props.history} idPacjenta={this.state.idPacjenta} updateList={() => this.updateList()} />
                 </div>
                 )}
 
 
                 {this.state.studys.map(row => (
                     <div key={row.id} style={{width: '100%',marginBottom:'20px'}}>
-                    <StudyComponent key={row.id} updateList={() => this.updateList()} pomiar={row}/>
+                    <StudyComponent key={row.id} history={this.props.history} updateList={() => this.updateList()} pomiar={row}/>
                     </div>
 
                 ))}

@@ -10,6 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import signInService from "../_services/SignInService";
 import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
 import { Button } from '@material-ui/core';
+import Popover from '@material-ui/core/Popover';
 
  class Navbar extends Component{
   constructor(props){
@@ -17,7 +18,7 @@ import { Button } from '@material-ui/core';
     this.state ={
       title: '',
       auth: signInService.currentUserValue,
-      anchorEl: false,
+      anchorEl: undefined,
     }
   //  this.headerUpdate=this.headerUpdate.bind(this);
 
@@ -52,13 +53,13 @@ componentWillUnmount() {
   
     const handleClose = () => {
       this.setState({
-        anchorEl: null
+        anchorEl: undefined
       })
     };
 
     const handleCloseLogout = () => {
       this.setState({
-        anchorEl: null
+        anchorEl: undefined
       })
       signInService.logout();
     };
