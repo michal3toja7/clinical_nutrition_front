@@ -248,12 +248,14 @@ class EditOrderComponent extends Component {
                                 disabled={this.state.status !== 'REA'} variant="contained" color="primary" onClick={() => this.changeStatus('ZRE')}>Zakończ realizację</Button>
 
                             <Button style={{width:'23%', margin:'1%'}} disabled={this.state.status === 'ZRE'} variant="contained" color="secondary" onClick={() => this.changeStatus('ANU')}>Anuluj zamówienie</Button>
-                            <Button style={{width:'23%', margin:'1%', display: this.state.isPrintReady ? "none" : "inline"}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}> Drukuj</Button>      
+                            <Button style={{width:'23%', margin:'1%', display: this.state.isPrintReady ? "none" : "inline"}} disabled= {false} variant="contained" color="primary" 
+                            onClick={() => this.print()}>Drukuj</Button>      
                             {this.state.isPrintReady&& (
                               <Button style={{width:'23%', margin:'1%'}} disabled= {false} variant="contained" color="primary" onClick={() => this.print()}>
                                 <OrderPdf tableIngredients={tableIngredients} order={this.state.order} positions={this.state.orderPositions} />
-                              </Button>    
+                              </Button> 
                             )}
+                            
                         </div>
                     )}
                     {!this.state.isJosRealizujacy && (

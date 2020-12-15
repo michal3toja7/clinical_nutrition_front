@@ -57,16 +57,8 @@ const MyDocument = (props) => (
 );
 
 export default function OrderPdf(props) {
-    console.log(props)
-    return(
-        <div>
-        <PDFDownloadLink document={<MyDocument props={props}/>} fileName="somename.pdf">
-          {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Drukuj')}
-        </PDFDownloadLink>
-
-
-
-      </div>
-        
-        )
+  return(
+  <PDFDownloadLink style={{textDecoration: 'none', color: 'white'}} document={<MyDocument props={props}/>} fileName="somename.pdf">
+  {({ blob, url, loading, error }) => (loading ? "Drukowanie..." : window.open(url,'_blank'),"Drukuj")}
+  </PDFDownloadLink>)
 }

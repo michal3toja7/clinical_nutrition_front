@@ -1,10 +1,12 @@
 import React from 'react';
 //import ReactPDF from 'react-pdf';
-import  { PDFDownloadLink,Page, Text, View, Document, StyleSheet, Font  } from '@react-pdf/renderer';
+import  {  BlobProvider,PDFDownloadLink,pdf,Page, Text, View, Document, StyleSheet, Font  } from '@react-pdf/renderer';
 import HeaderPdf from './HeaderPdf'
 import BodyPdf from './BodyPdf'
 import TableIngredientsPdf from './TableIngredientsPdf'
 import FooterPdf from './FooterPdf'
+import { saveAs } from 'file-saver';
+//import { DocumentPdf, getProps } from './document-pdf';
 
 Font.register({
   family: "Roboto",
@@ -38,9 +40,13 @@ const styles = StyleSheet.create({
 
 });
 
+
+
 // Create Document Component
 const MyDocument = (props) => (
+ 
   <Document>
+     {console.log(props)}
     <Page size="A4" style={styles.page}>
         <HeaderPdf order={props.props.order}/>
           <View style={styles.body}>
@@ -59,16 +65,10 @@ const MyDocument = (props) => (
 );
 
 export default function OrderPdf(props) {
-    console.log(props)
-    return(
-        <div>
-        <PDFDownloadLink document={<MyDocument props={props}/>} fileName="somename.pdf">
-          {({ blob, url, loading, error }) => (loading ? 'Loading document...' : 'Drukuj')}
-        </PDFDownloadLink>
-
-
-
-      </div>
-        
-        )
+  return(
+  <PDFDownloadLink style={{textDecoration: 'none', color: 'white'}} document={<MyDocument props={props}/>} fileName="somename.pdf">
+  {({ blob, url, loading, error }) => (loading ? "Drukowanie..." : window.open(url,'_blank'),"Drukuj")}
+  </PDFDownloadLink>)
 }
+
+

@@ -46,15 +46,14 @@ class SignIn extends Component{
         username: this.state.username,
         password: this.state.userPassword,
       }
+      
       signInService.login(user)
       .then(result => this.props.history.push("/home"),
             error => alert("Logowanie nie powiodło się") 
       )
-      
-
-      //  this.history.push("/home")
-     // }
-
+      signInService.getCurrentUser()
+      .then(result => this.props.history.push("/home") 
+      )
 
     }
   render() {

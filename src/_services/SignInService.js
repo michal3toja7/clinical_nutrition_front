@@ -12,18 +12,17 @@ const currentUserSubject = new BehaviorSubject(JSON.parse(sessionStorage.getItem
     login,
     logout,
     refreshToken,
+    getCurrentUser,
     currentUser: currentUserSubject.asObservable(),
     isUserAuthenticated,
     get currentUserValue () { return currentUserSubject.value }
-};
+}
 
 
 
    async function login(user) {
     return await axios.post(API_URL+'/authenticate', user)
-        .then(result => {Cookies.set('token',result.data)
-            getCurrentUser()}) 
-    // await getCurrentUser()
+        .then(result => {Cookies.set('token',result.data)}) 
     }
 
 
