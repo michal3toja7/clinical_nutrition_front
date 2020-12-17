@@ -11,6 +11,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import {MuiPickersUtilsProvider,KeyboardDatePicker} from '@material-ui/pickers';
 import ErrorComponent from '../../_helpers/ErrorComponent'
 import LoadingComponent from '../../_helpers/LoadingComponent'
+import FormControl from '@material-ui/core/FormControl';
 
 
 class EditPatientComponent extends Component {
@@ -146,12 +147,12 @@ class EditPatientComponent extends Component {
         else{
         return (
             <div>
-                <form style={formContainer} component={Paper}>
-                   <Typography variant="h6" fullwidth align="left">Dane osobowe:</Typography>                      
+                <form style={formContainer} noValidate autoComplete="off" onSubmit={this.savePatient} component={Paper}>
+                   <Typography variant="h6" fullwidth align="left">Dane osobowe:</Typography>                
                         <TextField variant="outlined" autoFocus type="number" margin="normal" disabled
                         name="id" label="ID" value={this.state.id} onChange={this.onChange} style={{marginRight: "100%",minWidth: "200px"}}/>
                                
-                        <TextField variant="outlined" autoFocus type="text" required  margin="normal" 
+                        <TextField variant="outlined" autoFocus type="text" required="true"  margin="normal"
                         label="Imiona" name="imiona" value={this.state.imiona} onChange={this.onChange} style={fieldStyle.left}/>
 
                         <TextField variant="outlined" autoFocus type="text"  required 
@@ -188,14 +189,13 @@ class EditPatientComponent extends Component {
                         <TextField variant="outlined" autoFocus type="text" label="Adres - Nr Mieszkania" margin="normal"  
                          name="nrMieszkania" value={this.state.nrMieszkania} onChange={this.onChange} style={fieldStyle.leftAlone}/>                                                     
 
-
                         <FormControlLabel style= {fieldStyle.leftAlone} control={
                             <Checkbox onChange={this.onCheckboxChange} name="czyZyje" checked={this.state.czyZyje} value={this.state.czyZyje} />    
                         }
                         label="Czy Żyje"/>
 
 
-                    <Button variant="contained" color="primary" onClick={this.savePatient}>Zapisz</Button>
+                    <Button variant="contained" color="primary" type="submit">Zapisz</Button>
 
             </form>
     </div>

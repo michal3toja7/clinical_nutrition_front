@@ -33,29 +33,30 @@ export default function UserTab(props) {
         <div style={dynamicStyle(props)}>
             <div style={{width: "33%"}}>   
                 <ul style={{listStyle: "none", fontWeight: "bold"}}>
-                    <li><Button><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
+                    <li><Button onClick={() => props.history.push("/orderList")}><ShoppingBasketRoundedIcon style={iconStyle}></ShoppingBasketRoundedIcon></Button></li>
                     <li><Button onClick={() => props.history.push("/orderList")}>Zamówienia</Button></li>     
-                    <li><Button>Zamówienia do realizacji</Button></li>
-                    <li><Button>Zamówienia zrealizowane</Button></li>
-                    <li><Button>Zamówienia zapisane</Button></li>
+                    <li><Button onClick={() => props.history.push("/orderList")&
+                                                window.sessionStorage.setItem("status", "REA")}>Zamówienia do realizacji</Button></li>
+                    <li><Button onClick={() => props.history.push("/orderList")&
+                                                window.sessionStorage.setItem("status", "ZRE")}>Zamówienia zrealizowane</Button></li>
+                    <li><Button onClick={() => props.history.push("/orderList")&
+                                                window.sessionStorage.setItem("status", "ZAP")}>Zamówienia zapisane</Button></li>
                 </ul>
             </div>
 
             <div style={{width: "33%"}}>   
                 <ul style={{listStyle: "none"}}>
-                    <li><Button><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
+                    <li><Button onClick={() => props.history.push("/patients")}><PeopleAltRoundedIcon style={iconStyle}></PeopleAltRoundedIcon></Button></li>
                     <li><Button onClick={() => props.history.push("/patients")}>
                         Rejestr pacjentów
                         </Button></li>     
                     <li><Button onClick={() => props.history.push("/add-patient")}>Dodaj pacjenta</Button></li>
-                    <li><Button onClick={() => props.history.push("/patients")}>Edytuj Pacjenta</Button></li>
-
                 </ul>
             </div>
 
             <div style={{width: "33%"}}>   
                 <ul style={{listStyle: "none"}}>
-                    <li><Button><LocalDiningIcon style={iconStyle}></LocalDiningIcon></Button></li>
+                    <li><Button  onClick={() => props.history.push("/preparations")}><LocalDiningIcon style={iconStyle}></LocalDiningIcon></Button></li>
                     <li><Button  onClick={() => props.history.push("/preparations")}>Preparaty</Button></li>
                     <li><Button  onClick={() => props.history.push("/add-preparation")}>Dodaj Preparat</Button></li>        
                     <li><Button  onClick={() => props.history.push("/preparationBags")}>Worki Żywieniowe</Button></li>

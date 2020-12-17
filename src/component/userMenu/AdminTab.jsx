@@ -21,9 +21,6 @@ export default function AdminTab(props) {
                             <li><Button onClick={() => props.history.push("/admin/add-user")}>
                                 Dodaj użytkownika
                             </Button></li>
-                            <li><Button onClick={() => props.history.push("/admin/users")}>
-                                Edytuj użytkownika
-                            </Button></li>
                         </ul>
                     </div>
 
@@ -37,9 +34,6 @@ export default function AdminTab(props) {
                                 </Button></li>
                                 <li><Button onClick={() => props.history.push("/admin/add-jos")}>
                                     Dodaj Jednostkę Organizacyjną
-                                </Button></li>
-                                <li><Button onClick={() => props.history.push("/admin/jos")}>
-                                    Edytuj Jednostkę Organizacyjną
                                 </Button></li>
                         </ul>
                     </div>  

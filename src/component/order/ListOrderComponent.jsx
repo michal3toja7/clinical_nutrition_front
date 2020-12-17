@@ -36,7 +36,7 @@ class ListOrderComponent extends Component {
             orders: [],
             title: 'Zamówienia',
             typ:'',
-            status: '',
+            status: window.sessionStorage.getItem("status")==null? '' : window.sessionStorage.getItem("status"),
             page: 0,
             rowsPerPage: 7,
         }
@@ -59,6 +59,9 @@ class ListOrderComponent extends Component {
     componentDidMount() {
         this.reloadOrderList();
     }
+    componentDidUpdate(){
+        window.sessionStorage.removeItem("status");
+    }
 
     reloadOrderList() {
         OrderService.fetchOrdersByJos(JSON.parse(sessionStorage.getItem("currentJos")))
@@ -66,13 +69,10 @@ class ListOrderComponent extends Component {
                 if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
                 else{
                     this.setState({initialOrders: result.data,
-                    orders: result.data,
+                        orders: result.data
+                        .filter((data) => (data.status+'').toLowerCase().includes(this.state.status.toLowerCase())),
                     isLoading: false,
-                                                })
-                    }
-  
-                                        });
-
+                        })}});
     }
 
     editOrder(order) {
@@ -90,11 +90,18 @@ class ListOrderComponent extends Component {
         )})
     }
 
+    searchOnLoad = () =>{
+        const search = window.sessionStorage.getItem("status");
+        const field = "status";
+        this.setState({orders: this.state.initialOrders
+        .filter((data) => data[field].toLowerCase().includes(search.toLowerCase())),
+            [field]: search
+        })
+    }
+
     searchSelect= (searchString) => {
         const search = searchString.target.value;
         const field = searchString.target.name;
-        console.log(search)
-        console.log(field)
         this.setState({orders: this.state.initialOrders
         .filter((data) => data[field].toLowerCase().includes(search.toLowerCase())),
             [field]: search
@@ -128,6 +135,7 @@ class ListOrderComponent extends Component {
 
                 <TextField variant="standard" select style={{width: '25%'}} label="Status zamówienia" 
                             name="status" value={this.state.status} onChange={this.searchSelect}>
+                                <MenuItem value={''}>Dowolny</MenuItem>
                                 <MenuItem value={"ZAP"}>Zapisane</MenuItem>
                                 <MenuItem value={"WYS"}>Wysłane</MenuItem>
                                 <MenuItem value={"REA"}>Realizowane</MenuItem>

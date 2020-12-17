@@ -19,7 +19,7 @@ class UserMenu extends Component{
                 message: null,
                 joss: [],
                 currentJos: JSON.parse(sessionStorage.getItem("currentJos")),
-                value: 0,
+                value: window.sessionStorage.getItem("tabIndex")==null? 0 : parseInt(window.sessionStorage.getItem("tabIndex")),
                 fieldWidth :'48%',
                 test: {}
             }
@@ -34,10 +34,9 @@ class UserMenu extends Component{
 
      handleChange = (event, newValue) => {
         this.setState({value:newValue});
+        window.sessionStorage.setItem("tabIndex", newValue)
     };
-     handleChangeIndex = index => {
-        this.setState({value: index});
-      };
+
     
       onSetJos = (value) =>{
       signInService.refreshToken(value)  
