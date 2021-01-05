@@ -76,7 +76,7 @@ class ListPatientComponent extends Component {
 
     addPatient() {
         window.sessionStorage.removeItem("patientId");
-        this.props.history.push('/add-patient');
+        this.props.history.push('/edit-patient');
     }
 
     search= (searchString) => {

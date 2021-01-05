@@ -47,7 +47,12 @@ class EditPreparationComponent extends Component {
     }
     
     componentDidMount(){
-        this.loadPreparation();
+        if (sessionStorage.getItem("preparationId") != 'null' && sessionStorage.getItem("preparationId") != undefined) {
+            this.loadPreparation();
+        }
+        else {
+            this.setState({ isLoading: false })
+        }
         var screenWidth= window.innerWidth;
         if(screenWidth<600){
             this.setState({fieldWidth: '100%' }) 
@@ -124,14 +129,27 @@ class EditPreparationComponent extends Component {
             cynk: this.state.cynk,
             czyAktywny: this.state.czyAktywny
             };
-        PreparationService.editPreparation(preparation)
-            .then(result => {
-                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
-                else{
-                    this.setState({message : 'Preparat aedytowany z sukcesem.', isLoading: false});
+            if (this.state.id == '') {
+                delete preparation["id"];
+                PreparationService.addPreparation(preparation)
+                .then(result => {
+                    if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                    else{
+                    this.setState({message : 'Preparat dodany z sukcesem.'});
                     this.props.history.push('/preparations');
+                    }
+                });
+            }
+            else{
+                PreparationService.editPreparation(preparation)
+                    .then(result => {
+                        if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
+                        else{
+                            this.setState({message : 'Preparat aedytowany z sukcesem.', isLoading: false});
+                            this.props.history.push('/preparations');
+                        }
+                    });
                 }
-            });
     }
 
     render() {

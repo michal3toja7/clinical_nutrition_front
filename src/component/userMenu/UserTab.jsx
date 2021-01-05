@@ -50,7 +50,7 @@ export default function UserTab(props) {
                     <li><Button onClick={() => props.history.push("/patients")}>
                         Rejestr pacjentów
                         </Button></li>     
-                    <li><Button onClick={() => props.history.push("/add-patient")}>Dodaj pacjenta</Button></li>
+                    <li><Button onClick={() => props.history.push("/edit-patient")}>Dodaj pacjenta</Button></li>
                 </ul>
             </div>
 
