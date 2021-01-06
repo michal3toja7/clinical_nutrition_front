@@ -1,6 +1,4 @@
-import {Field, Schema} from "v4f";
-
-// Create Complex validation, with rules chaining
+import {Field, Schema, When} from "v4f";
 
 const isValidPesel = pesel => {
     console.log(pesel)
@@ -17,31 +15,25 @@ const isValidPesel = pesel => {
     sum = sum % 10;
     return (10 - sum) % 10 === controlNumber;
 }
-
-
 export default Schema(
     {
-        imiona: Field()
-            .string()
-            .alpha({message: "Tylko znaki alfabetu"})
-            .required({message: "To pole nie może być puste"}),
-        nazwisko: Field()
-            .string()
-            .alpha({message: "Tylko znaki alfabetu"})
-            .required({message: "To pole nie może być puste"}),
         pesel: Field()
             .string()
             .custom(isValidPesel, {message: "To nie jest prawidłowy pesel"})
             .required({message: "To pole nie może być puste"}),
-        plec: Field()
+        username: Field()
             .string()
             .required({message: "To pole nie może być puste"}),
-        kodPocztowy: Field()
+        password: Field()
             .string()
-            .pattern(/^\d\d-\d\d\d$/, {message: "Nieprawidłowy kod pocztowy"})
-            .not.required()
-
+            .required({constraint: When("#id", Field().string().empty())},
+                {message: "To pole nie może być puste"}),
+        imiona: Field()
+            .string()
+            .required({message: "To pole nie może być puste"}),
+        nazwisko: Field()
+            .string()
+            .required({message: "To pole nie może być puste"})
     },
-
     {verbose: true, async: true}
 );

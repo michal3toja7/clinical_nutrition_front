@@ -1,92 +1,90 @@
 import React from 'react';
 //import ReactPDF from 'react-pdf';
-import  { PDFDownloadLink,Page, Text, View, Document, StyleSheet,  } from '@react-pdf/renderer';
+import {PDFDownloadLink, Page, Text, View, Document, StyleSheet,} from '@react-pdf/renderer';
 
 // Create styles
 const styles = StyleSheet.create({
-    table: { 
-      display: "table", 
-      width: "90%", 
-      marginLeft:"5%",
-      marginRight:"5%",
-      borderStyle: "solid", 
-      borderWidth: 1, 
-      borderRightWidth: 0, 
-      borderBottomWidth: 0 
-    }, 
-    tableRow: { 
-      margin: "auto", 
-      flexDirection: "row" 
-    }, 
-    tableCol: { 
-      width: "25%", 
-      borderStyle: "solid", 
-      borderWidth: 1, 
-      borderLeftWidth: 0, 
-      borderTopWidth: 0 
-    }, 
-    tableBigCol: { 
-        width: "75%", 
-        borderStyle: "solid", 
-        borderWidth: 1, 
-        borderLeftWidth: 0, 
-        borderTopWidth: 0 
-      }, 
-    tableSignatureCol: { 
-        width: "50%", 
-        height: "40px", 
-        borderStyle: "solid", 
-        borderWidth: 1, 
-        borderLeftWidth: 0, 
-        borderTopWidth: 0 
-      }, 
-    tableCell: { 
-      margin: "auto", 
-      fontSize: 10 
+    table: {
+        display: "table",
+        width: "90%",
+        marginLeft: "5%",
+        marginRight: "5%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderRightWidth: 0,
+        borderBottomWidth: 0
     },
-  });
+    tableRow: {
+        margin: "auto",
+        flexDirection: "row"
+    },
+    tableCol: {
+        width: "25%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderLeftWidth: 0,
+        borderTopWidth: 0
+    },
+    tableBigCol: {
+        width: "75%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderLeftWidth: 0,
+        borderTopWidth: 0
+    },
+    tableSignatureCol: {
+        width: "50%",
+        height: "40px",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderLeftWidth: 0,
+        borderTopWidth: 0
+    },
+    tableCell: {
+        margin: "auto",
+        fontSize: 10
+    },
+});
 
 
+const FooterPdf = (props) => (
 
-
-const FooterPdf = (props) =>(
-
-    <View style={styles.table}> 
-        <View style={styles.tableRow}> 
-            <View style={styles.tableCol}> 
-                <Text style={styles.tableCell}>Czas wlewu:</Text> 
-            </View> 
-            <View style={styles.tableCol}> 
-                <Text style={styles.tableCell}> {props.positions.czasWlewu} </Text> 
-            </View> 
-            <View style={styles.tableCol}> 
-                <Text style={styles.tableCell}>Prędkość wlewu:</Text> 
-            </View> 
-            <View style={styles.tableCol}> 
-                <Text style={styles.tableCell}>{props.podaz[props.podaz.length-1].wynik}</Text> 
-            </View> 
+    <View style={styles.table}>
+        <View style={styles.tableRow}>
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>Czas wlewu:</Text>
             </View>
-
-            <View style={styles.tableRow}>
-                <View style={styles.tableCol}> 
-                    <Text style={styles.tableCell}>Uwagi:</Text> 
-                </View> 
-                <View style={styles.tableBigCol}> 
-                    <Text style={styles.tableCell}> {props.positions.uwagi} </Text> 
-                </View> 
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}> {props.positions.czasWlewu} </Text>
             </View>
-
-            <View style={styles.tableRow}>
-                <View style={styles.tableSignatureCol}> 
-                    <Text style={styles.tableCell}>Podpis zlecającego</Text> 
-                </View> 
-                <View style={styles.tableSignatureCol}> 
-                    <Text style={styles.tableCell}>Podpis wykonującego</Text> 
-                </View> 
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>Prędkość wlewu:</Text>
             </View>
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>{props.podaz[props.podaz.length - 1].wynik}</Text>
+            </View>
+        </View>
+
+        <View style={styles.tableRow}>
+            <View style={styles.tableCol}>
+                <Text style={styles.tableCell}>Uwagi:</Text>
+            </View>
+            <View style={styles.tableBigCol}>
+                <Text style={styles.tableCell}> {props.positions.uwagi} </Text>
+            </View>
+        </View>
+
+        <View style={styles.tableRow}>
+            <View style={styles.tableSignatureCol}>
+                <Text style={styles.tableCell}>Podpis zlecającego</Text>
+            </View>
+            <View style={styles.tableSignatureCol}>
+                <Text style={styles.tableCell}>Podpis wykonującego</Text>
+            </View>
+        </View>
 
     </View>
 )
 
 
-export default  FooterPdf
+export default FooterPdf

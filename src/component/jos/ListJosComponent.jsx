@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import josService from "../../_services/JosService";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,7 +21,7 @@ class ListJosComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            error:null,
+            error: null,
             isLoading: true,
             initialjoss: [],
             joss: [],
@@ -34,16 +34,16 @@ class ListJosComponent extends Component {
         this.addJos = this.addJos.bind(this);
         this.reloadjosList = this.reloadJosList.bind(this);
     }
-    
+
     handleChangePage = (event, newPage) => {
         this.setState({page: newPage});
-      };
-    
+    };
+
     handleChangeRowsPerPage = event => {
 
         this.setState({rowsPerPage: parseInt(event.target.value, 10)});
         this.setState({page: 0});
-      };
+    };
 
 
     componentDidMount() {
@@ -52,15 +52,17 @@ class ListJosComponent extends Component {
 
     reloadJosList() {
         josService.fetchJoss()
-            .then(result => { 
-                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
-                else{
-                    this.setState({initialjoss: result.data,
-                                    joss: result.data,
-                                    isLoading: false,
-                            })
-                        }
-                    });
+            .then(result => {
+                if (result.error !== undefined) {
+                    this.setState({error: result.error, isLoading: false})
+                } else {
+                    this.setState({
+                        initialjoss: result.data,
+                        joss: result.data,
+                        isLoading: false,
+                    })
+                }
+            });
     }
 
     editJos(id) {
@@ -73,35 +75,37 @@ class ListJosComponent extends Component {
         this.props.history.push('/admin/add-jos');
     }
 
-    search= (searchString) => {
+    search = (searchString) => {
         const search = searchString.target.value;
-        this.setState({joss: this.state.initialjoss
-        .filter((data) => data.kod.toLowerCase().includes(search.toLowerCase()) 
-        || data.nazwa.toLowerCase().includes(search.toLowerCase())
-        || data.rodzaj.replace(null,' ').toLowerCase().includes(search.toLowerCase())  )})
+        this.setState({
+            joss: this.state.initialjoss
+                .filter((data) => data.kod.toLowerCase().includes(search.toLowerCase())
+                    || data.nazwa.toLowerCase().includes(search.toLowerCase())
+                    || data.rodzaj.replace(null, ' ').toLowerCase().includes(search.toLowerCase()))
+        })
     }
 
     render() {
-        if(this.state.error!== null  || this.state.isLoading){
-            return(
+        if (this.state.error !== null || this.state.isLoading) {
+            return (
                 <div>
                     {(this.state.isLoading
-                    ? <LoadingComponent/>
-                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                            ? <LoadingComponent/>
+                            : <ErrorComponent error={this.state.error} history={this.props.history}/>
                     )}
                 </div>
             );
-        }
-        else{
-        return (
-            <div>
-                <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
-                width="25%" type="text" className="input" placeholder="Szukaj..." onChange={this.search}/>
+        } else {
+            return (
+                <div>
+                    <TextField style={{float: "right"}} variant="standard" autoFocus position="right"
+                               width="25%" type="text" className="input" placeholder="Szukaj..."
+                               onChange={this.search}/>
                     <TableContainer component={Paper}>
                         <Table aria-label="custom pagination table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell >ID</TableCell>
+                                    <TableCell>ID</TableCell>
                                     <TableCell align="right">Kod</TableCell>
                                     <TableCell align="right">Nazwa</TableCell>
                                     <TableCell align="right">Rodzaj</TableCell>
@@ -111,45 +115,47 @@ class ListJosComponent extends Component {
                             </TableHead>
                             <TableBody>
                                 {(this.state.rowsPerPage > 0
-                                ? this.state.joss.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
-                                : this.state.joss).map(row => (
+                                    ? this.state.joss.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
+                                    : this.state.joss).map(row => (
                                     <TableRow hover key={row.id}>
                                         <TableCell component="th" scope="row"> {row.id} </TableCell>
                                         <TableCell align="right"> {row.kod} </TableCell>
                                         <TableCell align="right">{row.nazwa}</TableCell>
                                         <TableCell align="right">{row.rodzaj}</TableCell>
                                         <TableCell align="right">{row.czyAktywny ? 'Tak' : 'Nie'}</TableCell>
-                                        <TableCell align="right" onClick={() => this.editJos(row.id)}><CreateIcon /></TableCell>
+                                        <TableCell align="right"
+                                                   onClick={() => this.editJos(row.id)}><CreateIcon/></TableCell>
                                     </TableRow>
                                 ))}
 
-                                    
+
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                        rowsPerPageOptions={[5, 10, 25, {label: 'All', value: -1}]}
                                         colSpan={6}
                                         count={this.state.joss.length}
                                         rowsPerPage={this.state.rowsPerPage}
                                         page={this.state.page}
                                         labelRowsPerPage="Wierszy na stronę:"
                                         SelectProps={{
-                                            inputProps: { 'aria-label': 'Wierszy na stronę' },
+                                            inputProps: {'aria-label': 'Wierszy na stronę'},
                                             native: true,
                                         }}
                                         onChangePage={this.handleChangePage}
                                         onChangeRowsPerPage={this.handleChangeRowsPerPage}
                                     />
                                 </TableRow>
-                            </TableFooter>             
+                            </TableFooter>
                         </Table>
                     </TableContainer>
-                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addJos()}> Dodaj Jednostkę Organizacyjną</Button>
+                    <Button style={{float: "right"}} variant="contained" color="primary"
+                            onClick={() => this.addJos()}> Dodaj Jednostkę Organizacyjną</Button>
                 </div>
             );
         }
-        }
+    }
 }
 
 export default ListJosComponent;

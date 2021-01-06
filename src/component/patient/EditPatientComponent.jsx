@@ -1,19 +1,18 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PatientService from "../../_services/PatientService";
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { Typography } from '@material-ui/core';
+import {Typography} from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import {MuiPickersUtilsProvider, KeyboardDatePicker} from '@material-ui/pickers';
 import ErrorComponent from '../../_helpers/ErrorComponent';
 import LoadingComponent from '../../_helpers/LoadingComponent';
 import PatientValidate from './PatientValidate';
 import Grid from '@material-ui/core/Grid';
-
 
 
 class EditPatientComponent extends Component {
@@ -37,7 +36,6 @@ class EditPatientComponent extends Component {
             nrMieszkania: '',
             czyZyje: true,
             message: null,
-            fieldWidth: '47%',
             errors: {}
         }
         this.props.title(this.state.title);
@@ -49,25 +47,17 @@ class EditPatientComponent extends Component {
     componentDidMount() {
         if (sessionStorage.getItem("patientId") != 'null' && sessionStorage.getItem("patientId") != undefined) {
             this.loadPatient()
+        } else {
+            this.setState({isLoading: false})
         }
-        else {
-            this.setState({ isLoading: false })
-        }
-        var screenWidth = window.innerWidth;
-        if (screenWidth < 600) {
-            this.setState({ fieldWidth: '100%' })
-        }
-        else {
-            this.setState({ fieldWidth: '47%' })
-        }
-
     }
 
     loadPatient() {
         PatientService.fetchPatientById(window.sessionStorage.getItem("patientId"))
             .then((result) => {
-                if (result.error !== undefined) { this.setState({ error: result.error, isLoading: false }) }
-                else {
+                if (result.error !== undefined) {
+                    this.setState({error: result.error, isLoading: false})
+                } else {
                     let patient = result.data;
                     this.setState({
                         id: patient.id,
@@ -92,13 +82,13 @@ class EditPatientComponent extends Component {
     }
 
     onChange = (e) =>
-        this.setState({ [e.target.name]: e.target.value }
+        this.setState({[e.target.name]: e.target.value}
         );
 
     onBlur(e) {
         // Handle Validation on touch
 
-        const { name, value } = e.target;
+        const {name, value} = e.target;
 
         const isValid = PatientValidate[name].validate(value, {
             verbose: true,
@@ -107,17 +97,17 @@ class EditPatientComponent extends Component {
 
         if (isValid !== true) {
             this.setState({
-                errors: { ...this.state.errors, [name]: isValid }
+                errors: {...this.state.errors, [name]: isValid}
             });
         } else {
             this.setState({
-                errors: { ...this.state.errors, [name]: undefined }
+                errors: {...this.state.errors, [name]: undefined}
             });
         }
     }
 
     onCheckboxChange = (e) =>
-        this.setState({ [e.target.name]: e.target.checked }
+        this.setState({[e.target.name]: e.target.checked}
         );
 
 
@@ -145,26 +135,26 @@ class EditPatientComponent extends Component {
                     delete patient["id"];
                     PatientService.addPatient(patient)
                         .then(result => {
-                            if (result.error !== undefined) { this.setState({ error: result.error, isLoading: false }) }
-                            else {
-                                this.setState({ message: 'Pacjent dodany z sukcesem.' });
+                            if (result.error !== undefined) {
+                                this.setState({error: result.error, isLoading: false})
+                            } else {
+                                this.setState({message: 'Pacjent dodany z sukcesem.'});
                             }
                         })
-                }
-                else {
+                } else {
                     console.log(patient)
                     PatientService.editPatient(patient)
                         .then(result => {
-                            if (result.error !== undefined) { this.setState({ error: result.error, isLoading: false }) }
-                            else {
-                                this.setState({ message: 'Pacjent zapisany z sukcesem.' });
+                            if (result.error !== undefined) {
+                                this.setState({error: result.error, isLoading: false})
+                            } else {
+                                this.setState({message: 'Pacjent zapisany z sukcesem.'});
                             }
                         });
                 }
             })
             .catch(errors => {
-                console.log("Jestem w błędach")
-                this.setState({ errors });
+                this.setState({errors});
             });
     }
 
@@ -173,16 +163,16 @@ class EditPatientComponent extends Component {
             return (
                 <div>
                     {(this.state.isLoading
-                        ? <LoadingComponent />
-                        : <ErrorComponent error={this.state.error} history={this.props.history} />
+                            ? <LoadingComponent/>
+                            : <ErrorComponent error={this.state.error} history={this.props.history}/>
                     )}
                 </div>
             );
-        }
-        else {
+        } else {
             return (
                 <div>
-                    <form style={formContainer} noValidate autoComplete="off" onSubmit={this.savePatient} component={Paper}>
+                    <form style={formContainer} noValidate autoComplete="off" onSubmit={this.savePatient}
+                          component={Paper}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={12}>
                                 <Typography variant="h6" width="100%" align="left">Dane osobowe:</Typography>
@@ -198,7 +188,7 @@ class EditPatientComponent extends Component {
                                     label="ID"
                                     value={this.state.id}
                                     onChange={this.onChange}
-                                    style={{ float: "left" }}
+                                    style={{float: "left"}}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -252,7 +242,7 @@ class EditPatientComponent extends Component {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
-                                <MuiPickersUtilsProvider utils={DateFnsUtils} >
+                                <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                     <KeyboardDatePicker
                                         variant="inline"
                                         format="dd.MM.yyyy"
@@ -260,7 +250,7 @@ class EditPatientComponent extends Component {
                                         label="Data Urodzenia"
                                         name="dataUrodzenia"
                                         value={this.state.dataUrodzenia}
-                                        onChange={(date) => this.setState({ dataUrodzenia: new Date(date) })}
+                                        onChange={(date) => this.setState({dataUrodzenia: new Date(date)})}
                                         fullWidth
                                     />
                                 </MuiPickersUtilsProvider>
@@ -365,7 +355,7 @@ class EditPatientComponent extends Component {
                                         />
                                     }
                                     label="Czy Żyje"
-                                    style={{ float: "left" }} />
+                                    style={{float: "left"}}/>
                             </Grid>
                             <Grid item xs={12} sm={12}>
                                 <Button variant="contained" color="primary" type="submit">Zapisz</Button>
@@ -378,6 +368,7 @@ class EditPatientComponent extends Component {
         }
     }
 }
+
 const formContainer = {
     //  display: '',
     flexFlow: 'row wrap'

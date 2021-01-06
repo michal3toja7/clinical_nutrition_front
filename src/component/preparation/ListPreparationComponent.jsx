@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PreparationService from "../../_services/PreparationService";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,7 +21,7 @@ class ListPreparationComponent extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            error:null,
+            error: null,
             isLoading: true,
             initialPreparations: [],
             preparations: [],
@@ -34,16 +34,16 @@ class ListPreparationComponent extends Component {
         this.addPreparation = this.addPreparation.bind(this);
         this.reloadPreparationList = this.reloadPreparationList.bind(this);
     }
-    
+
     handleChangePage = (event, newPage) => {
         this.setState({page: newPage});
-      };
-    
+    };
+
     handleChangeRowsPerPage = event => {
 
         this.setState({rowsPerPage: parseInt(event.target.value, 10)});
         this.setState({page: 0});
-      };
+    };
 
 
     componentDidMount() {
@@ -52,14 +52,17 @@ class ListPreparationComponent extends Component {
 
     reloadPreparationList() {
         PreparationService.fetchPreparations()
-            .then(result =>{
-                if(result.error !== undefined){ this.setState({error: result.error, isLoading: false})}
-                else{
-                    this.setState({initialPreparations: result.data,
-                                           preparations: result.data,
-                                           isLoading: false})
-                    }
-                });
+            .then(result => {
+                if (result.error !== undefined) {
+                    this.setState({error: result.error, isLoading: false})
+                } else {
+                    this.setState({
+                        initialPreparations: result.data,
+                        preparations: result.data,
+                        isLoading: false
+                    })
+                }
+            });
     }
 
     editPreparation(id) {
@@ -69,38 +72,40 @@ class ListPreparationComponent extends Component {
 
     addPreparation() {
         window.sessionStorage.removeItem("preparationId");
-        this.props.history.push('/add-preparation');
+        this.props.history.push('/edit-preparation');
     }
 
-    search= (searchString) => {
+    search = (searchString) => {
         const search = searchString.target.value;
-        this.setState({preparations: this.state.initialPreparations
-        .filter((data) => (data.nazwa+'').toLowerCase().includes(search.toLowerCase()) 
-        || (data.typ+'').toLowerCase().includes(search.toLowerCase())
-        || (data.opis+'').toLowerCase().includes(search.toLowerCase())  )})
+        this.setState({
+            preparations: this.state.initialPreparations
+                .filter((data) => (data.nazwa + '').toLowerCase().includes(search.toLowerCase())
+                    || (data.typ + '').toLowerCase().includes(search.toLowerCase())
+                    || (data.opis + '').toLowerCase().includes(search.toLowerCase()))
+        })
     }
 
     render() {
-        if(this.state.error!== null  || this.state.isLoading){
-            return(
+        if (this.state.error !== null || this.state.isLoading) {
+            return (
                 <div>
                     {(this.state.isLoading
-                    ? <LoadingComponent/>
-                    : <ErrorComponent error={this.state.error} history={this.props.history}/>
+                            ? <LoadingComponent/>
+                            : <ErrorComponent error={this.state.error} history={this.props.history}/>
                     )}
                 </div>
             );
-        }
-        else{
-        return (
-            <div>
-                <TextField style={{ float: "right" }} variant="standard" autoFocus position="right" 
-                width="25%" type="text" className="input" placeholder="Szukaj..." onChange={this.search}/>
+        } else {
+            return (
+                <div>
+                    <TextField style={{float: "right"}} variant="standard" autoFocus position="right"
+                               width="25%" type="text" className="input" placeholder="Szukaj..."
+                               onChange={this.search}/>
                     <TableContainer component={Paper}>
                         <Table aria-label="custom pagination table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell  style={{display: "none"}} >ID</TableCell>
+                                    <TableCell style={{display: "none"}}>ID</TableCell>
                                     <TableCell align="right">Nazwa</TableCell>
                                     <TableCell align="right">Typ</TableCell>
                                     <TableCell align="right">Opis</TableCell>
@@ -110,45 +115,49 @@ class ListPreparationComponent extends Component {
                             </TableHead>
                             <TableBody>
                                 {(this.state.rowsPerPage > 0
-                                ? this.state.preparations.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
-                                : this.state.preparations).map(row => (
+                                    ? this.state.preparations.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage)
+                                    : this.state.preparations).map(row => (
                                     <TableRow hover key={row.id}>
-                                        <TableCell  style={{display: "none"}} component="th" scope="row"> {row.id} </TableCell>
+                                        <TableCell style={{display: "none"}} component="th"
+                                                   scope="row"> {row.id} </TableCell>
                                         <TableCell align="right"> {row.nazwa} </TableCell>
-                                        <TableCell align="right">{row.typ === 'DOJ' ? 'Dojelitowy' : 'Doustny'}</TableCell>
+                                        <TableCell
+                                            align="right">{row.typ === 'DOJ' ? 'Dojelitowy' : 'Doustny'}</TableCell>
                                         <TableCell align="right">{row.opis}</TableCell>
                                         <TableCell align="right">{row.wartoscEnergetyczna}</TableCell>
-                                        <TableCell align="right" onClick={() => this.editPreparation(row.id)}><CreateIcon /></TableCell>
+                                        <TableCell align="right"
+                                                   onClick={() => this.editPreparation(row.id)}><CreateIcon/></TableCell>
                                     </TableRow>
                                 ))}
 
-                                    
+
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
                                     <TablePagination
-                                        rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                        rowsPerPageOptions={[5, 10, 25, {label: 'All', value: -1}]}
                                         colSpan={8}
                                         count={this.state.preparations.length}
                                         rowsPerPage={this.state.rowsPerPage}
                                         page={this.state.page}
                                         labelRowsPerPage="Wierszy na stronę:"
                                         SelectProps={{
-                                            inputProps: { 'aria-label': 'Wierszy na stronę' },
+                                            inputProps: {'aria-label': 'Wierszy na stronę'},
                                             native: true,
                                         }}
                                         onChangePage={this.handleChangePage}
                                         onChangeRowsPerPage={this.handleChangeRowsPerPage}
                                     />
                                 </TableRow>
-                            </TableFooter>             
+                            </TableFooter>
                         </Table>
                     </TableContainer>
-                    <Button style={{ float: "right" }} variant="contained" color="primary" onClick={() => this.addPreparation()}> Dodaj Preparat</Button>
+                    <Button style={{float: "right"}} variant="contained" color="primary"
+                            onClick={() => this.addPreparation()}> Dodaj Preparat</Button>
                 </div>
             );
         }
-        }
+    }
 }
 
 export default ListPreparationComponent;
