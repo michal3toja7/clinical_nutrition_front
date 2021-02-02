@@ -64,7 +64,7 @@ class EditPreparationBagComponent extends Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("preparationBagId") != 'null' && sessionStorage.getItem("preparationBagId") != undefined) {
+        if (sessionStorage.getItem("preparationBagId") !== null && sessionStorage.getItem("preparationBagId") !== undefined) {
             this.loadPreparationBag();
         } else {
             this.setState({isLoading: false})
@@ -190,7 +190,7 @@ class EditPreparationBagComponent extends Component {
         };
         PreparationBagValidate.validate(this.state)
             .then(data => {
-                if (this.state.id == '') {
+                if (this.state.id === '') {
                     delete preparationBag["id"];
                     PreparationBagService.addPreparationBag(preparationBag)
                         .then(result => {

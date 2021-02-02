@@ -44,7 +44,7 @@ class EditJosComponent extends Component {
     }
 
     componentWillMount() {
-        if (sessionStorage.getItem("josId") != 'null' && sessionStorage.getItem("josId") != undefined) {
+        if (sessionStorage.getItem("josId") !== null && sessionStorage.getItem("josId") !== undefined) {
             this.loadJos();
         } else {
             this.setState({isLoading: false})
@@ -127,7 +127,7 @@ class EditJosComponent extends Component {
 
         JosValidation.validate(this.state)
             .then(data => {
-                if (this.state.id == '') {
+                if (this.state.id === '') {
                     delete jos["id"];
                     JosService.addJos(jos)
                         .then(res => {

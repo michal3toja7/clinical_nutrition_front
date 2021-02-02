@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
         //margin: '50px',
         // flexDirection: 'row',
         fontFamily: "Roboto",
-        backgroundColor: '#E4E4E4'
+        backgroundColor: '#FFFFFF'
     },
     section: {
         flexGrow: 1

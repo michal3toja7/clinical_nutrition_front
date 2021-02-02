@@ -87,9 +87,9 @@ class ListPatientComponent extends Component {
         const search = searchString.target.value;
         this.setState({
             patients: this.state.initialPatients
-                .filter((data) => data.patientname.toLowerCase().includes(search.toLowerCase())
-                    || data.imiona.toLowerCase().includes(search.toLowerCase())
-                    || data.nazwisko.replace(null, ' ').toLowerCase().includes(search.toLowerCase()))
+                .filter((data) => (data.patientname+ '').toLowerCase().includes(search.toLowerCase())
+                    || (data.imiona+ '').toLowerCase().includes(search.toLowerCase())
+                    || (data.nazwisko+ '').replace(null, ' ').toLowerCase().includes(search.toLowerCase()))
         })
     }
 

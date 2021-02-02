@@ -40,7 +40,7 @@ class EditUserComponent extends Component {
     }
 
     componentWillMount() {
-        if (sessionStorage.getItem("userId") != 'null' && sessionStorage.getItem("userId") != undefined) {
+        if (sessionStorage.getItem("userId") !== null && sessionStorage.getItem("userId") !== undefined) {
             this.loadUser();
         } else {
             this.setState({isLoading: false})
@@ -117,7 +117,7 @@ class EditUserComponent extends Component {
         };
         UserValidation.validate(this.state)
             .then(data => {
-                if (this.state.id == '') {
+                if (this.state.id === '') {
                     delete user["id"];
                     UserService.addUser(user)
                         .then(result => {

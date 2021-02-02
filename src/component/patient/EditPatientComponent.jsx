@@ -45,7 +45,7 @@ class EditPatientComponent extends Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("patientId") != 'null' && sessionStorage.getItem("patientId") != undefined) {
+        if (sessionStorage.getItem("patientId") !== null && sessionStorage.getItem("patientId") !== undefined) {
             this.loadPatient()
         } else {
             this.setState({isLoading: false})
@@ -131,7 +131,7 @@ class EditPatientComponent extends Component {
         };
         PatientValidate.validate(this.state)
             .then(data => {
-                if (this.state.id == '') {
+                if (this.state.id === '') {
                     delete patient["id"];
                     PatientService.addPatient(patient)
                         .then(result => {
@@ -139,6 +139,7 @@ class EditPatientComponent extends Component {
                                 this.setState({error: result.error, isLoading: false})
                             } else {
                                 this.setState({message: 'Pacjent dodany z sukcesem.'});
+                                this.props.history.push('/patients');
                             }
                         })
                 } else {
@@ -149,6 +150,7 @@ class EditPatientComponent extends Component {
                                 this.setState({error: result.error, isLoading: false})
                             } else {
                                 this.setState({message: 'Pacjent zapisany z sukcesem.'});
+                                this.props.history.push('/patients');
                             }
                         });
                 }

@@ -51,7 +51,7 @@ class EditPreparationComponent extends Component {
     }
 
     componentDidMount() {
-        if (sessionStorage.getItem("preparationId") != 'null' && sessionStorage.getItem("preparationId") != undefined) {
+        if (sessionStorage.getItem("preparationId") !== null && sessionStorage.getItem("preparationId") !== undefined) {
             this.loadPreparation();
         } else {
             this.setState({isLoading: false})
@@ -147,7 +147,7 @@ class EditPreparationComponent extends Component {
         };
         PreparationValidate.validate(this.state)
             .then(data => {
-                if (this.state.id == '') {
+                if (this.state.id === '') {
                     delete preparation["id"];
                     PreparationService.addPreparation(preparation)
                         .then(result => {
