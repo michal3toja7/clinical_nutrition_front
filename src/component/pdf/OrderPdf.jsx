@@ -1,12 +1,10 @@
 import React from 'react';
-//import ReactPDF from 'react-pdf';
-import {BlobProvider, PDFDownloadLink, pdf, Page, Text, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
+import {PDFDownloadLink, Page, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
 import HeaderPdf from './HeaderPdf'
 import BodyPdf from './BodyPdf'
 import TableIngredientsPdf from './TableIngredientsPdf'
 import FooterPdf from './FooterPdf'
-import {saveAs} from 'file-saver';
-//import { DocumentPdf, getProps } from './document-pdf';
+
 
 Font.register({
     family: "Roboto",

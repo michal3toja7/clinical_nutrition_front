@@ -9,8 +9,6 @@ import ErrorComponent from '../../_helpers/ErrorComponent'
 import LoadingComponent from '../../_helpers/LoadingComponent'
 import Grid from "@material-ui/core/Grid";
 import StudyValidate from "./StudyValidate";
-import PreparationValidate from "../preparation/PreparationValidate";
-
 
 class StudyComponent extends Component {
     _isMounted = false;
@@ -269,17 +267,6 @@ class StudyComponent extends Component {
             );
         }
     }
-}
-
-const flexStyle = {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "streth",
-    flexWrap: "wrap",
-}
-const fieldStyleFlex = {
-    width: "19%",
-    margin: "0.5%"
 }
 
 export default StudyComponent;

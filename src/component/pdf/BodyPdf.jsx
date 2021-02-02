@@ -1,6 +1,6 @@
 import React from 'react';
 //import ReactPDF from 'react-pdf';
-import {PDFDownloadLink, Page, Text, View, Document, StyleSheet,} from '@react-pdf/renderer';
+import {Text, View, StyleSheet,} from '@react-pdf/renderer';
 
 // Create styles
 const styles = StyleSheet.create({

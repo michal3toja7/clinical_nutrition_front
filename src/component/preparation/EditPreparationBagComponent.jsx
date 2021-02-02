@@ -10,7 +10,6 @@ import ErrorComponent from '../../_helpers/ErrorComponent';
 import LoadingComponent from '../../_helpers/LoadingComponent';
 import Grid from "@material-ui/core/Grid";
 import PreparationBagValidate from './PreparationBagValidate';
-import PreparationValidate from "./PreparationValidate";
 
 
 class EditPreparationBagComponent extends Component {

@@ -1,6 +1,5 @@
 import React from 'react';
-//import ReactPDF from 'react-pdf';
-import {PDFDownloadLink, Page, Text, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
+import {PDFDownloadLink, Page, View, Document, StyleSheet, Font} from '@react-pdf/renderer';
 import HeaderPdf from '../pdf/HeaderPdf'
 import RtuPdf from './RtuPdf'
 import TableIngredientsPdf from './TableIngredientsPdf'

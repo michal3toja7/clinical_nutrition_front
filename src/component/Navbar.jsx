@@ -10,7 +10,6 @@ import Menu from '@material-ui/core/Menu';
 import signInService from "../_services/SignInService";
 import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
 import {Button} from '@material-ui/core';
-import Popover from '@material-ui/core/Popover';
 
 class Navbar extends Component {
     constructor(props) {
